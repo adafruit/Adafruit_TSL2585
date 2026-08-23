@@ -48,8 +48,6 @@ bool Adafruit_TSL2585::begin(uint8_t i2c_addr, TwoWire* wire) {
   if (getDeviceID() != TSL2585_DEVICE_ID) {
     return false;
   }
-  getRevisionID();
-  getAuxiliaryID();
   _uv_calibration = getUVCalibration();
 
   return configure();
