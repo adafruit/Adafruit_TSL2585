@@ -45,9 +45,12 @@ bool Adafruit_TSL2585::begin(uint8_t i2c_addr, TwoWire* wire) {
     return false;
   }
 
+  // ID confirms that the responding I2C device is a TSL2585.
   if (getDeviceID() != TSL2585_DEVICE_ID) {
     return false;
   }
+
+  // UV_CALIB supplies the factory correction used for calibrated UVA results.
   _uv_calibration = getUVCalibration();
 
   return configure();
@@ -226,12 +229,14 @@ bool Adafruit_TSL2585::readData(tsl2585_data_t* data) {
     return false;
   }
 
+  // STATUS2 reports digital saturation for the current result.
   uint8_t status2;
   Adafruit_BusIO_Register status2_reg(i2c_dev, TSL2585_REG_STATUS2);
   if (!status2_reg.read(&status2)) {
     return false;
   }
 
+  // ALS_STATUS starts the atomic status, counts, and actual-gains result frame.
   tsl2585_result_buffer_t result;
   Adafruit_BusIO_Register als_result_reg(i2c_dev, TSL2585_REG_ALS_STATUS,
                                          sizeof(result.buffer), LSBFIRST);
@@ -299,10 +304,13 @@ bool Adafruit_TSL2585::setALSThresholds(tsl2585_channel_t channel,
     return false;
   }
 
+  // ALS_THRESHOLD_LOW and ALS_THRESHOLD_HIGH hold the 24-bit window limits.
   Adafruit_BusIO_Register low_threshold_reg(
       i2c_dev, TSL2585_REG_ALS_THRESHOLD_LOW, 3, LSBFIRST);
   Adafruit_BusIO_Register high_threshold_reg(
       i2c_dev, TSL2585_REG_ALS_THRESHOLD_HIGH, 3, LSBFIRST);
+
+  // CFG5 selects which optical channel is compared and its persistence count.
   Adafruit_BusIO_Register cfg5_reg(i2c_dev, TSL2585_REG_CFG5);
   Adafruit_BusIO_RegisterBits threshold_channel_bits(
       &cfg5_reg, TSL2585_CFG5_THRESHOLD_CHANNEL_BITS,
@@ -331,6 +339,7 @@ bool Adafruit_TSL2585::enableALSInterrupt(bool enabled) {
     return false;
   }
 
+  // INTENAB enables or disables ALS threshold events as an interrupt source.
   Adafruit_BusIO_Register interrupt_enable_reg(i2c_dev, TSL2585_REG_INTENAB);
   Adafruit_BusIO_RegisterBits als_interrupt_enable_bit(
       &interrupt_enable_reg, 1, TSL2585_INTENAB_AIEN_BIT);
@@ -338,9 +347,12 @@ bool Adafruit_TSL2585::enableALSInterrupt(bool enabled) {
     return als_interrupt_enable_bit.write(0);
   }
 
+  // CFG3 routes the interrupt signal to the external INT pin.
   Adafruit_BusIO_Register cfg3_reg(i2c_dev, TSL2585_REG_CFG3);
   Adafruit_BusIO_RegisterBits int_pinmap_bits(
       &cfg3_reg, TSL2585_CFG3_INT_PINMAP_BITS, TSL2585_CFG3_INT_PINMAP_SHIFT);
+
+  // VSYNC_GPIO_INT makes INT an active-low output instead of an input.
   Adafruit_BusIO_Register gpio_reg(i2c_dev, TSL2585_REG_VSYNC_GPIO_INT);
   Adafruit_BusIO_RegisterBits int_input_enable_bit(
       &gpio_reg, 1, TSL2585_INT_INPUT_ENABLE_BIT);
@@ -389,9 +401,12 @@ bool Adafruit_TSL2585::setGPIOOutput(bool high) {
     return false;
   }
 
+  // CFG3 routes the GPIO output register to the external GPIO pin.
   Adafruit_BusIO_Register cfg3_reg(i2c_dev, TSL2585_REG_CFG3);
   Adafruit_BusIO_RegisterBits gpio_pinmap_bits(
       &cfg3_reg, TSL2585_CFG3_GPIO_PINMAP_BITS, TSL2585_CFG3_GPIO_PINMAP_SHIFT);
+
+  // VSYNC_GPIO_INT sets the GPIO direction, polarity, and open-drain state.
   Adafruit_BusIO_Register gpio_reg(i2c_dev, TSL2585_REG_VSYNC_GPIO_INT);
   Adafruit_BusIO_RegisterBits gpio_invert_bit(&gpio_reg, 1,
                                               TSL2585_GPIO_INVERT_BIT);
@@ -415,6 +430,7 @@ bool Adafruit_TSL2585::enableGPIOInput(bool enabled) {
     return false;
   }
 
+  // VSYNC_GPIO_INT releases the open-drain output before enabling input mode.
   Adafruit_BusIO_Register gpio_reg(i2c_dev, TSL2585_REG_VSYNC_GPIO_INT);
   Adafruit_BusIO_RegisterBits gpio_input_enable_bit(
       &gpio_reg, 1, TSL2585_GPIO_INPUT_ENABLE_BIT);
@@ -434,6 +450,7 @@ bool Adafruit_TSL2585::readGPIOInput() {
     return false;
   }
 
+  // VSYNC_GPIO_INT reports the logic level currently present on the GPIO pin.
   Adafruit_BusIO_Register gpio_reg(i2c_dev, TSL2585_REG_VSYNC_GPIO_INT);
   Adafruit_BusIO_RegisterBits gpio_input_bit(&gpio_reg, 1,
                                              TSL2585_GPIO_INPUT_BIT);
@@ -471,26 +488,43 @@ bool Adafruit_TSL2585::configure() {
     return false;
   }
 
+  // MEAS_MODE0 and MEAS_MODE1 select the result format and bit alignment.
   Adafruit_BusIO_Register meas_mode0_reg(i2c_dev, TSL2585_REG_MEAS_MODE0);
   Adafruit_BusIO_Register meas_mode1_reg(i2c_dev, TSL2585_REG_MEAS_MODE1);
+
+  // SAMPLE_TIME0 sets each modulator sample period; ALS_NR_SAMPLES0 sets how
+  // many samples are accumulated into one ALS result.
   Adafruit_BusIO_Register sample_time_reg(i2c_dev, TSL2585_REG_SAMPLE_TIME0, 2,
                                           LSBFIRST);
   Adafruit_BusIO_Register als_samples_reg(i2c_dev, TSL2585_REG_ALS_NR_SAMPLES0,
                                           2, LSBFIRST);
+
+  // MEAS_SEQR_FD_0 disables flicker steps. MEAS_SEQR_ALS_FD_1 enables ALS step
+  // 0, and MEAS_SEQR_APERS applies interrupt persistence to that step.
   Adafruit_BusIO_Register sequencer_fd_reg(i2c_dev, TSL2585_REG_MEAS_SEQR_FD_0);
   Adafruit_BusIO_Register sequencer_als_reg(i2c_dev,
                                             TSL2585_REG_MEAS_SEQR_ALS_FD_1);
   Adafruit_BusIO_Register sequencer_persistence_reg(
       i2c_dev, TSL2585_REG_MEAS_SEQR_APERS);
+
+  // MEAS_SEQR_RESIDUAL_0 and _1 disable residual measurements on all three
+  // modulators.
   Adafruit_BusIO_Register sequencer_residual0_reg(
       i2c_dev, TSL2585_REG_MEAS_SEQR_RESIDUAL_0);
   Adafruit_BusIO_Register sequencer_residual1_reg(
       i2c_dev, TSL2585_REG_MEAS_SEQR_RESIDUAL_1);
+
+  // CFG8 sets the sequencer gain ceiling.
   Adafruit_BusIO_Register cfg8_reg(i2c_dev, TSL2585_REG_CFG8);
   Adafruit_BusIO_RegisterBits maximum_gain_bits(
       &cfg8_reg, TSL2585_CFG8_MAX_GAIN_BITS, TSL2585_CFG8_MAX_GAIN_SHIFT);
+
+  // STEP0_GAIN_L sets photopic and IR gain; STEP0_GAIN_H sets UVA gain.
   Adafruit_BusIO_Register gain_low_reg(i2c_dev, TSL2585_REG_STEP0_GAIN_L);
   Adafruit_BusIO_Register gain_high_reg(i2c_dev, TSL2585_REG_STEP0_GAIN_H);
+
+  // STEP0_SMUX_L and _H route the photopic, IR, and UVA photodiodes to their
+  // three modulators.
   Adafruit_BusIO_Register smux_low_reg(i2c_dev, TSL2585_REG_STEP0_SMUX_L);
   Adafruit_BusIO_Register smux_high_reg(i2c_dev, TSL2585_REG_STEP0_SMUX_H);
 
