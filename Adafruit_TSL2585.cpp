@@ -55,6 +55,10 @@ bool Adafruit_TSL2585::begin(uint8_t i2c_addr, TwoWire* wire) {
 
 /*!
  * @brief Enable or disable continuous ALS measurements.
+ *
+ * Datasheet Figure 16 sequences PON from SLEEP to IDLE before AEN starts ALS.
+ * Figure 20 identifies PON as the oscillator enable and AEN as the ALS enable.
+ *
  * @param enabled True to enable measurements, false to disable them.
  * @return True when the register writes succeeded.
  */
@@ -69,16 +73,19 @@ bool Adafruit_TSL2585::enable(bool enabled) {
   Adafruit_BusIO_RegisterBits als_enable_bit(&enable_reg, 1,
                                              TSL2585_ENABLE_AEN_BIT);
   if (!enabled) {
+    // Reverse Figure 16's sequence: stop ALS before stopping its oscillator.
     if (!als_enable_bit.write(0)) {
       return false;
     }
     return power_on_bit.write(0);
   }
 
+  // Figures 16 and 20 start the oscillator and enter IDLE before enabling ALS.
   if (!power_on_bit.write(1)) {
     return false;
   }
 
+  // No PON-to-AEN delay is specified; allow a conservative startup margin.
   delay(1);
   return als_enable_bit.write(1);
 }
@@ -96,6 +103,8 @@ bool Adafruit_TSL2585::setIntegrationTime(float milliseconds) {
   uint16_t sample_count = (uint16_t)(milliseconds * 4.0F + 0.5F);
   uint16_t register_value = sample_count - 1;
 
+  // Figures 25 and 26 do not define a live update for this two-byte field.
+  // Stop ALS so the next conversion uses one complete integration setting.
   if (!enable(false)) {
     return false;
   }
@@ -139,6 +148,8 @@ bool Adafruit_TSL2585::setGain(tsl2585_channel_t channel, tsl2585_gain_t gain) {
     return false;
   }
 
+  // Figures 63 and 64 do not define when a running cycle adopts a new gain.
+  // Stop ALS so the next conversion uses the requested gain from its start.
   if (!enable(false)) {
     return false;
   }
@@ -289,6 +300,8 @@ bool Adafruit_TSL2585::setALSThresholds(tsl2585_channel_t channel,
     return false;
   }
 
+  // Figures 30, 31, and 47 spread interrupt setup across multiple writes.
+  // Stop ALS so no result is tested against a partly updated configuration.
   if (!enable(false)) {
     return false;
   }
@@ -460,6 +473,7 @@ uint8_t Adafruit_TSL2585::getUVCalibration() {
 
 /*! @brief Configure the recommended one-step, three-channel ALS sequence. */
 bool Adafruit_TSL2585::configure() {
+  // ENABLE register Figure 20 says to set PON only after configuration.
   if (!enable(false)) {
     return false;
   }
