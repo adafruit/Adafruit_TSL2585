@@ -221,13 +221,15 @@ class Adafruit_TSL2585 {
   uint8_t _uv_calibration = 127;
 
   bool configure();
-  bool configureResultFormat();
-  bool configureSampleTiming();
-  bool writeIntegrationSamples(uint16_t sample_count);
-  bool writeGain(tsl2585_channel_t channel, tsl2585_gain_t gain);
-  bool configureSequencer();
-  bool configureGainControl();
-  bool configureSMUX();
+  bool setResultFormat(uint8_t mode0, uint8_t mode1);
+  bool setSampleTime(uint16_t register_value);
+  bool setIntegrationSamples(uint16_t sample_count);
+  bool setGainValue(tsl2585_channel_t channel, tsl2585_gain_t gain);
+  bool setSequencer(uint8_t flicker_steps, uint8_t als_steps,
+                    uint8_t persistence_steps, uint8_t residual0_steps,
+                    uint8_t residual1_steps);
+  bool setMaximumGain(tsl2585_gain_t gain);
+  bool setSMUX(uint8_t low, uint8_t high);
 };
 
 #endif
