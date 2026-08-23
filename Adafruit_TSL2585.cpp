@@ -70,7 +70,6 @@ bool Adafruit_TSL2585::enable(bool enabled) {
     if (!enable_reg.write(0)) {
       return false;
     }
-    _enabled = false;
     return true;
   }
 
@@ -83,7 +82,6 @@ bool Adafruit_TSL2585::enable(bool enabled) {
     return false;
   }
 
-  _enabled = true;
   return true;
 }
 
@@ -106,9 +104,6 @@ bool Adafruit_TSL2585::setIntegrationTime(float milliseconds) {
   Adafruit_BusIO_Register als_samples_reg(i2c_dev, TSL2585_REG_ALS_NR_SAMPLES0,
                                           2, LSBFIRST);
   bool success = als_samples_reg.write(register_value);
-  if (success) {
-    _als_samples = register_value;
-  }
 
   if (!enable(true)) {
     return false;
@@ -118,10 +113,20 @@ bool Adafruit_TSL2585::setIntegrationTime(float milliseconds) {
 
 /*!
  * @brief Get the configured ALS integration time.
- * @return Integration time in milliseconds.
+ * @return Integration time in milliseconds, or 0 if the register read failed.
  */
 float Adafruit_TSL2585::getIntegrationTime() {
-  return (_als_samples + 1) * 0.25F;
+  if (i2c_dev == nullptr) {
+    return 0;
+  }
+
+  uint16_t register_value;
+  Adafruit_BusIO_Register als_samples_reg(i2c_dev, TSL2585_REG_ALS_NR_SAMPLES0,
+                                          2, LSBFIRST);
+  if (!als_samples_reg.read(&register_value)) {
+    return 0;
+  }
+  return (register_value + 1) * 0.25F;
 }
 
 /*!
@@ -136,30 +141,24 @@ bool Adafruit_TSL2585::setGain(tsl2585_channel_t channel, tsl2585_gain_t gain) {
     return false;
   }
 
-  tsl2585_gain_t previous_gain = _gains[channel];
-  bool was_enabled = _enabled;
-  _gains[channel] = gain;
-
-  if (was_enabled && !enable(false)) {
-    _gains[channel] = previous_gain;
+  if (!enable(false)) {
     return false;
   }
 
-  bool success;
+  uint16_t register_address = TSL2585_REG_STEP0_GAIN_L;
+  uint8_t shift = TSL2585_PHOTOPIC_GAIN_SHIFT;
   if (channel == TSL2585_CHANNEL_UVA) {
-    Adafruit_BusIO_Register gain_high_reg(i2c_dev, TSL2585_REG_STEP0_GAIN_H);
-    success = gain_high_reg.write((uint8_t)gain);
-  } else {
-    uint8_t gains = (uint8_t)_gains[TSL2585_CHANNEL_PHOTOPIC] |
-                    ((uint8_t)_gains[TSL2585_CHANNEL_IR] << 4);
-    Adafruit_BusIO_Register gain_low_reg(i2c_dev, TSL2585_REG_STEP0_GAIN_L);
-    success = gain_low_reg.write(gains);
+    register_address = TSL2585_REG_STEP0_GAIN_H;
+    shift = TSL2585_UVA_GAIN_SHIFT;
+  } else if (channel == TSL2585_CHANNEL_IR) {
+    shift = TSL2585_IR_GAIN_SHIFT;
   }
 
-  if (!success) {
-    _gains[channel] = previous_gain;
-  }
-  if (was_enabled && !enable(true)) {
+  Adafruit_BusIO_Register gain_reg(i2c_dev, register_address);
+  Adafruit_BusIO_RegisterBits gain_bits(&gain_reg, TSL2585_GAIN_BITS, shift);
+  bool success = gain_bits.write((uint8_t)gain);
+
+  if (!enable(true)) {
     return false;
   }
   return success;
@@ -168,13 +167,28 @@ bool Adafruit_TSL2585::setGain(tsl2585_channel_t channel, tsl2585_gain_t gain) {
 /*!
  * @brief Get the configured manual gain for one channel.
  * @param channel The photopic, infrared, or UVA channel.
- * @return The configured gain, or 0.5x for an invalid channel.
+ * @return The configured gain, or 0.5x for an invalid channel or failed read.
  */
 tsl2585_gain_t Adafruit_TSL2585::getGain(tsl2585_channel_t channel) {
-  if ((uint8_t)channel > TSL2585_CHANNEL_UVA) {
+  if (i2c_dev == nullptr || (uint8_t)channel > TSL2585_CHANNEL_UVA) {
     return TSL2585_GAIN_0_5X;
   }
-  return _gains[channel];
+
+  uint16_t register_address = TSL2585_REG_STEP0_GAIN_L;
+  uint8_t shift = TSL2585_PHOTOPIC_GAIN_SHIFT;
+  if (channel == TSL2585_CHANNEL_UVA) {
+    register_address = TSL2585_REG_STEP0_GAIN_H;
+    shift = TSL2585_UVA_GAIN_SHIFT;
+  } else if (channel == TSL2585_CHANNEL_IR) {
+    shift = TSL2585_IR_GAIN_SHIFT;
+  }
+
+  uint8_t register_value;
+  Adafruit_BusIO_Register gain_reg(i2c_dev, register_address);
+  if (!gain_reg.read(&register_value)) {
+    return TSL2585_GAIN_0_5X;
+  }
+  return (tsl2585_gain_t)((register_value >> shift) & TSL2585_GAIN_MASK);
 }
 
 /*!
@@ -205,7 +219,7 @@ bool Adafruit_TSL2585::dataReady() {
  * @return True when the register data was read successfully.
  */
 bool Adafruit_TSL2585::readData(tsl2585_data_t* data) {
-  if (i2c_dev == nullptr || data == nullptr || !_enabled) {
+  if (i2c_dev == nullptr || data == nullptr) {
     return false;
   }
 
@@ -277,8 +291,7 @@ bool Adafruit_TSL2585::setALSThresholds(tsl2585_channel_t channel,
     return false;
   }
 
-  bool was_enabled = _enabled;
-  if (was_enabled && !enable(false)) {
+  if (!enable(false)) {
     return false;
   }
 
@@ -298,7 +311,7 @@ bool Adafruit_TSL2585::setALSThresholds(tsl2585_channel_t channel,
                  threshold_channel_bits.write((uint8_t)channel) &&
                  persistence_bits.write(persistence);
 
-  if (was_enabled && !enable(true)) {
+  if (!enable(true)) {
     return false;
   }
   return success;
@@ -453,11 +466,6 @@ bool Adafruit_TSL2585::configure() {
     return false;
   }
 
-  _als_samples = TSL2585_DEFAULT_ALS_SAMPLES;
-  _gains[TSL2585_CHANNEL_PHOTOPIC] = TSL2585_GAIN_128X;
-  _gains[TSL2585_CHANNEL_IR] = TSL2585_GAIN_128X;
-  _gains[TSL2585_CHANNEL_UVA] = TSL2585_GAIN_128X;
-
   Adafruit_BusIO_Register meas_mode0_reg(i2c_dev, TSL2585_REG_MEAS_MODE0);
   Adafruit_BusIO_Register meas_mode1_reg(i2c_dev, TSL2585_REG_MEAS_MODE1);
   Adafruit_BusIO_Register sample_time_reg(i2c_dev, TSL2585_REG_SAMPLE_TIME0, 2,
@@ -484,7 +492,7 @@ bool Adafruit_TSL2585::configure() {
   if (!meas_mode0_reg.write(TSL2585_MEAS_MODE0_FULL_COUNTS) ||
       !meas_mode1_reg.write(TSL2585_MEAS_MODE1_MSB_POSITION_12) ||
       !sample_time_reg.write(TSL2585_SAMPLE_TIME_250_US) ||
-      !als_samples_reg.write(_als_samples) ||
+      !als_samples_reg.write(TSL2585_DEFAULT_ALS_SAMPLES) ||
       !sequencer_fd_reg.write(TSL2585_SEQUENCER_DISABLED) ||
       !sequencer_als_reg.write(TSL2585_SEQUENCER_STEP0) ||
       !sequencer_persistence_reg.write(TSL2585_SEQUENCER_STEP0) ||

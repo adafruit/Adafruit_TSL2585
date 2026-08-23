@@ -91,6 +91,10 @@
 #define TSL2585_GPIO_INPUT_BIT 0        ///< GPIO input value bit position
 
 #define TSL2585_GAIN_MASK 0x0F ///< Mask for one four-bit gain status field
+#define TSL2585_GAIN_BITS 4    ///< Width of one gain configuration field
+#define TSL2585_PHOTOPIC_GAIN_SHIFT 0 ///< Photopic gain field position
+#define TSL2585_IR_GAIN_SHIFT 4       ///< IR gain field position
+#define TSL2585_UVA_GAIN_SHIFT 0      ///< UVA gain field position
 
 #define TSL2585_ALS_STATUS_PHOTOPIC_SATURATION 0x20 ///< Modulator 0 saturated
 #define TSL2585_ALS_STATUS_IR_SATURATION 0x10       ///< Modulator 1 saturated
@@ -194,10 +198,6 @@ class Adafruit_TSL2585 {
 
  private:
   Adafruit_I2CDevice* i2c_dev = nullptr;
-  bool _enabled = false;
-  uint16_t _als_samples = TSL2585_DEFAULT_ALS_SAMPLES;
-  tsl2585_gain_t _gains[3] = {TSL2585_GAIN_128X, TSL2585_GAIN_128X,
-                              TSL2585_GAIN_128X};
   uint8_t _uv_calibration = 127;
 
   bool configure();
