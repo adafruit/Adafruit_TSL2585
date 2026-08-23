@@ -11,7 +11,7 @@ void setup() {
   }
   delay(250);
 
-  Serial.println("Adafruit TSL2585 photopic, infrared, and UVA sensor test");
+  Serial.println("Adafruit TSL2585 Serial Plotter example");
 
   if (!tsl2585.begin()) {
     Serial.println("Could not find a TSL2585. Check the wiring and I2C address.");
@@ -20,13 +20,6 @@ void setup() {
     }
   }
 
-  Serial.print("Device ID: 0x");
-  Serial.println(tsl2585.getDeviceID(), HEX);
-  Serial.print("Revision ID: 0x");
-  Serial.println(tsl2585.getRevisionID(), HEX);
-  Serial.print("Factory UVA calibration byte: ");
-  Serial.println(tsl2585.getUVCalibration());
-
   // Register-based results support integration times from 0.25 ms to 90 ms.
   if (!tsl2585.setIntegrationTime(50)) {
     Serial.println("Could not set the integration time.");
@@ -34,12 +27,6 @@ void setup() {
       delay(10);
     }
   }
-  Serial.print("Integration time: ");
-  Serial.print(tsl2585.getIntegrationTime(), 2);
-  Serial.println(" ms");
-
-  Serial.println();
-  Serial.println("Photopic\tInfrared\tUVA calibrated\tSaturated");
 }
 
 void loop() {
@@ -50,23 +37,22 @@ void loop() {
 
   tsl2585_data_t data;
   if (tsl2585.readData(&data)) {
-    bool saturated = false;
+    uint8_t saturated = 0;
     if (data.photopic_saturated || data.infrared_saturated ||
         data.uva_saturated) {
-      saturated = true;
+      saturated = 1;
     }
 
+    // Keep the same numeric label:value fields on every line so the Arduino
+    // Serial Plotter can graph each series.
+    Serial.print("Photopic:");
     Serial.print(data.photopic);
-    Serial.print('\t');
+    Serial.print(",Infrared:");
     Serial.print(data.infrared);
-    Serial.print('\t');
+    Serial.print(",UVA:");
     Serial.print(data.uva_calibrated, 1);
-    Serial.print('\t');
-    if (saturated) {
-      Serial.println("yes");
-    } else {
-      Serial.println("no");
-    }
+    Serial.print(",Saturated:");
+    Serial.println(saturated);
   }
 
   delay(100);
