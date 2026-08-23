@@ -4,12 +4,14 @@ Adafruit_TSL2585 tsl2585;
 
 void setup() {
   Serial.begin(115200);
+  // Wait for the Serial Monitor to open on native USB boards.
+  // Remove this while (!Serial) loop to run without a USB connection.
   while (!Serial) {
     delay(10);
   }
   delay(250);
 
-  Serial.println("TSL2585 photopic, infrared, and UVA sensor test");
+  Serial.println("Adafruit TSL2585 photopic, infrared, and UVA sensor test");
 
   if (!tsl2585.begin()) {
     Serial.println("Could not find a TSL2585. Check the wiring and I2C address.");
@@ -45,20 +47,23 @@ void loop() {
 
   tsl2585_data_t data;
   if (tsl2585.readData(&data)) {
-    Serial.print("Photopic: ");
-    Serial.print(data.photopic);
-    Serial.print("    IR: ");
-    Serial.print(data.infrared);
-    Serial.print("    UVA raw: ");
-    Serial.print(data.uva);
-    Serial.print("    UVA calibrated: ");
-    Serial.print(data.uva_calibrated, 1);
-
+    uint8_t saturated = 0;
     if (data.photopic_saturated || data.infrared_saturated ||
         data.uva_saturated) {
-      Serial.print("    saturated");
+      saturated = 1;
     }
-    Serial.println();
+
+    // Comma-separated label:value fields also work with Serial Plotter.
+    Serial.print("Photopic:");
+    Serial.print(data.photopic);
+    Serial.print(", IR:");
+    Serial.print(data.infrared);
+    Serial.print(", UVA_raw:");
+    Serial.print(data.uva);
+    Serial.print(", UVA_calibrated:");
+    Serial.print(data.uva_calibrated, 1);
+    Serial.print(", Saturated:");
+    Serial.println(saturated);
   }
 
   delay(100);

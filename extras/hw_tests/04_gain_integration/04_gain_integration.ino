@@ -46,6 +46,8 @@ void haltWithSuccess();
 
 void setup() {
   Serial.begin(115200);
+  // Wait for the Serial Monitor to open on native USB boards.
+  // Remove this while (!Serial) loop to run without a USB connection.
   while (!Serial) {
     delay(10);
   }
