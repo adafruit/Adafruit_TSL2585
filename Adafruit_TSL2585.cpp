@@ -140,11 +140,10 @@ float Adafruit_TSL2585::getIntegrationTime() {
  * @brief Set the manual gain for one optical channel.
  * @param channel The photopic, infrared, or UVA channel.
  * @param gain Gain from 0.5x through 4096x.
- * @return True when the channel and gain were valid and the write succeeded.
+ * @return True when the register writes succeeded.
  */
 bool Adafruit_TSL2585::setGain(tsl2585_channel_t channel, tsl2585_gain_t gain) {
-  if (i2c_dev == nullptr || (uint8_t)channel > TSL2585_CHANNEL_UVA ||
-      (uint8_t)gain > TSL2585_GAIN_4096X) {
+  if (i2c_dev == nullptr) {
     return false;
   }
 
@@ -176,10 +175,10 @@ bool Adafruit_TSL2585::setGain(tsl2585_channel_t channel, tsl2585_gain_t gain) {
 /*!
  * @brief Get the configured manual gain for one channel.
  * @param channel The photopic, infrared, or UVA channel.
- * @return The configured gain, or 0.5x for an invalid channel or failed read.
+ * @return The configured gain, or 0.5x if the register read failed.
  */
 tsl2585_gain_t Adafruit_TSL2585::getGain(tsl2585_channel_t channel) {
-  if (i2c_dev == nullptr || (uint8_t)channel > TSL2585_CHANNEL_UVA) {
+  if (i2c_dev == nullptr) {
     return TSL2585_GAIN_0_5X;
   }
 
@@ -287,14 +286,13 @@ float Adafruit_TSL2585::calibrateUVA(uint16_t raw_uva) {
  * @param low_threshold Inclusive low threshold from 0 through 0xFFFFFF.
  * @param high_threshold Inclusive high threshold from 0 through 0xFFFFFF.
  * @param persistence Consecutive out-of-range results required, from 0 to 15.
- * @return True when the arguments were valid and all writes succeeded.
+ * @return True when the numeric settings were valid and all writes succeeded.
  */
 bool Adafruit_TSL2585::setALSThresholds(tsl2585_channel_t channel,
                                         uint32_t low_threshold,
                                         uint32_t high_threshold,
                                         uint8_t persistence) {
-  if (i2c_dev == nullptr || (uint8_t)channel > TSL2585_CHANNEL_UVA ||
-      low_threshold > high_threshold ||
+  if (i2c_dev == nullptr || low_threshold > high_threshold ||
       high_threshold > TSL2585_MAX_INTERRUPT_THRESHOLD ||
       persistence > TSL2585_MAX_INTERRUPT_PERSISTENCE) {
     return false;
