@@ -137,11 +137,13 @@ float Adafruit_TSL2585::getIntegrationTime() {
 }
 
 /*!
- * @brief Set the manual gain for one optical channel.
+ * @brief Set the starting gain for one optical channel.
  *
  * This safely stops ALS, writes the selected step-0 modulator gain, and starts
  * ALS again. Photopic and IR share MEAS_SEQR_STEP0_MOD_GAINX_L; UVA uses
- * MEAS_SEQR_STEP0_MOD_GAINX_H. See TSL2585 datasheet Figures 63 and 64.
+ * MEAS_SEQR_STEP0_MOD_GAINX_H. See TSL2585 datasheet Figures 63 and 64. When
+ * AGC is enabled, the sensor may replace this value before a measurement. Use
+ * the gain fields returned by readData() for the gain actually used.
  *
  * @param channel The photopic, infrared, or UVA channel.
  * @param gain Gain from 0.5x through 4096x.
@@ -188,6 +190,78 @@ tsl2585_gain_t Adafruit_TSL2585::getGain(tsl2585_channel_t channel) {
   Adafruit_BusIO_Register gain_reg(i2c_dev, register_address);
   Adafruit_BusIO_RegisterBits gain_bits(&gain_reg, TSL2585_GAIN_BITS, shift);
   return (tsl2585_gain_t)gain_bits.read();
+}
+
+/*!
+ * @brief Enable or disable automatic gain control.
+ *
+ * Enabling selects both predictive AGC and analog-saturation AGC for the
+ * library's active sequencer step 0. Predictive AGC chooses a gain near its
+ * target level, while saturation AGC can reduce that gain and repeat an AGC
+ * measurement if analog saturation remains. See the TSL2585 application note
+ * section 2.5 and datasheet Figures 46, 74, 76, and 80.
+ *
+ * MOD_CALIB_CFG0 controls how often AGC runs. The library default is every
+ * sequencer round. Use setCalibrationIterations() while ALS is disabled to
+ * select another schedule. That schedule is shared with auto-zero calibration,
+ * which can add measurement time.
+ *
+ * @param enabled True to enable both AGC methods, false for manual gain.
+ * @return True when all register writes succeeded.
+ */
+bool Adafruit_TSL2585::enableAGC(bool enabled) {
+  if (i2c_dev == nullptr) {
+    return false;
+  }
+
+  // The AGC registers do not define coherent live-update behavior. Stop ALS so
+  // the next measurement starts with one complete AGC configuration.
+  if (!enable(false)) {
+    return false;
+  }
+
+  // CFG4 selects per-round or per-step calibration. Figure 46 requires
+  // per-round calibration when AGC is enabled.
+  Adafruit_BusIO_Register cfg4_reg(i2c_dev, TSL2585_REG_CFG4);
+  Adafruit_BusIO_RegisterBits calibration_step_enable_bit(
+      &cfg4_reg, 1, TSL2585_CFG4_CALIBRATION_STEP_ENABLE_BIT);
+
+  // STEP1_SMUX_H selects the sequencer steps that use saturation AGC.
+  Adafruit_BusIO_Register saturation_agc_reg(i2c_dev,
+                                              TSL2585_REG_STEP1_SMUX_H);
+  Adafruit_BusIO_RegisterBits saturation_agc_pattern(
+      &saturation_agc_reg, TSL2585_AGC_PATTERN_BITS,
+      TSL2585_AGC_PATTERN_SHIFT);
+
+  // STEP2_SMUX_H selects the sequencer steps that use predictive AGC.
+  Adafruit_BusIO_Register predictive_agc_reg(i2c_dev,
+                                              TSL2585_REG_STEP2_SMUX_H);
+  Adafruit_BusIO_RegisterBits predictive_agc_pattern(
+      &predictive_agc_reg, TSL2585_AGC_PATTERN_BITS,
+      TSL2585_AGC_PATTERN_SHIFT);
+
+  // MOD_CALIB_CFG2 links the selected AGC methods to the calibration schedule.
+  Adafruit_BusIO_Register calibration_features_reg(
+      i2c_dev, TSL2585_REG_MOD_CALIB_CFG2);
+  Adafruit_BusIO_RegisterBits agc_enable_bit(
+      &calibration_features_reg, 1, TSL2585_MOD_CALIB_AGC_ENABLE_BIT);
+
+  bool success;
+  if (enabled) {
+    success = calibration_step_enable_bit.write(0) &&
+              saturation_agc_pattern.write(TSL2585_AGC_STEP0_PATTERN) &&
+              predictive_agc_pattern.write(TSL2585_AGC_STEP0_PATTERN) &&
+              agc_enable_bit.write(1);
+  } else {
+    success = agc_enable_bit.write(0) &&
+              saturation_agc_pattern.write(TSL2585_SEQUENCER_DISABLED) &&
+              predictive_agc_pattern.write(TSL2585_SEQUENCER_DISABLED);
+  }
+
+  if (!enable(true)) {
+    return false;
+  }
+  return success;
 }
 
 /*!
@@ -675,7 +749,39 @@ bool Adafruit_TSL2585::setSMUX(uint8_t low, uint8_t high) {
   return smux_low_reg.write(low) && smux_high_reg.write(high);
 }
 
-/*! @brief Configure the recommended one-step, three-channel ALS sequence. */
+/*!
+ * @brief Set how often modulator calibration features run.
+ *
+ * MOD_CALIB_CFG0 schedules every enabled calibration feature, including AGC
+ * and auto-zero, by sequencer rounds. Write 0 to disable scheduled calibration,
+ * 1 through 254 to run every nth round, or 255 to run once when measurements
+ * start. See TSL2585 datasheet Figure 79. Disable ALS before changing this
+ * register; this function does not change PON or AEN.
+ *
+ * @param iterations Calibration schedule from 0 through 255.
+ * @return True when the register write succeeded.
+ */
+bool Adafruit_TSL2585::setCalibrationIterations(uint8_t iterations) {
+  if (i2c_dev == nullptr) {
+    return false;
+  }
+
+  Adafruit_BusIO_Register calibration_iterations_reg(
+      i2c_dev, TSL2585_REG_MOD_CALIB_CFG0);
+  return calibration_iterations_reg.write(iterations);
+}
+
+/*!
+ * @brief Configure the documented one-step, three-channel ALS defaults.
+ *
+ * The register-result path returns unscaled 16-bit full counts with a 250 us
+ * sample period and 200 samples for a 50 ms integration. Sequencer step 0 runs
+ * ALS and interrupt persistence without flicker, residual, VSYNC, or wait
+ * measurements. The ams OSRAM application note Table 1 SMUX map connects both
+ * photopic diodes to modulator 0, both IR diodes to modulator 1, and both UVA
+ * diodes to modulator 2. All three channels start at 128x gain, AGC may select
+ * up to 4096x, and both AGC methods run before every sequencer round.
+ */
 bool Adafruit_TSL2585::configure() {
   // ENABLE register Figure 20 says to set PON only after configuration.
   if (!enable(false)) {
@@ -689,6 +795,7 @@ bool Adafruit_TSL2585::configure() {
       !setSequencer(TSL2585_SEQUENCER_DISABLED, TSL2585_SEQUENCER_STEP0,
                     TSL2585_SEQUENCER_STEP0, TSL2585_SEQUENCER_DISABLED,
                     TSL2585_SEQUENCER_DISABLED) ||
+      !setCalibrationIterations(TSL2585_CALIBRATION_EVERY_ROUND) ||
       !setMaximumGain(TSL2585_GAIN_4096X) ||
       !setGainValue(TSL2585_CHANNEL_PHOTOPIC, TSL2585_GAIN_128X) ||
       !setGainValue(TSL2585_CHANNEL_IR, TSL2585_GAIN_128X) ||
@@ -697,5 +804,5 @@ bool Adafruit_TSL2585::configure() {
     return false;
   }
 
-  return enable(true);
+  return enableAGC(true);
 }

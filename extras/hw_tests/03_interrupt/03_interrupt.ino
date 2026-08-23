@@ -36,6 +36,11 @@ void setup() {
   }
   Serial.println(F("Begin succeeded"));
 
+  if (!tsl2585.enableAGC(false)) {
+    haltWithFailure(F("Disabling AGC for the fixed threshold test failed"));
+  }
+  Serial.println(F("AGC disabled for the fixed threshold test"));
+
   if (!tsl2585.setIntegrationTime(50)) {
     haltWithFailure(F("Setting the integration time failed"));
   }

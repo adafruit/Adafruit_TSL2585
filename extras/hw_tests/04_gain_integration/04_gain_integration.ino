@@ -74,6 +74,11 @@ void setup() {
   }
   Serial.println(F("Begin succeeded"));
 
+  if (!tsl2585.enableAGC(false)) {
+    haltWithFailure(F("Disabling AGC for the manual gain sweep failed"));
+  }
+  Serial.println(F("AGC disabled for the manual gain sweep"));
+
   digitalWrite(UVA_LED_PIN, HIGH);
   delay(100);
   Serial.println(F("D4 UVA LED is on for a steady optical stimulus"));

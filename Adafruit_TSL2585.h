@@ -43,6 +43,7 @@
 #define TSL2585_REG_STATUS2 0x9D        ///< ALS validity and saturation status
 #define TSL2585_REG_STATUS4 0x9F        ///< Initialization and trigger status
 #define TSL2585_REG_CFG3 0xA4           ///< INT and GPIO pin mapping
+#define TSL2585_REG_CFG4 0xA5           ///< Sequencer and AGC configuration
 #define TSL2585_REG_CFG5 0xA6           ///< ALS interrupt channel/persistence
 #define TSL2585_REG_CFG8 0xA9           ///< Maximum sequencer modulator gain
 #define TSL2585_REG_INTENAB 0xBA        ///< External interrupt enables
@@ -55,6 +56,10 @@
 #define TSL2585_REG_STEP0_GAIN_H 0xD5         ///< Step 0 modulator 2 gain
 #define TSL2585_REG_STEP0_SMUX_L 0xDC   ///< Step 0 photodiode map low byte
 #define TSL2585_REG_STEP0_SMUX_H 0xDD   ///< Step 0 photodiode map high byte
+#define TSL2585_REG_STEP1_SMUX_H 0xDF   ///< Saturation AGC step pattern
+#define TSL2585_REG_STEP2_SMUX_H 0xE1   ///< Predictive AGC step pattern
+#define TSL2585_REG_MOD_CALIB_CFG0 0xE4 ///< Calibration repetition rate
+#define TSL2585_REG_MOD_CALIB_CFG2 0xE6 ///< Calibration feature enables
 #define TSL2585_REG_VSYNC_GPIO_INT 0xF8 ///< INT and GPIO direction/value
 
 #define TSL2585_ENABLE_PON_BIT 0 ///< Oscillator and power enable bit position
@@ -74,6 +79,8 @@
 #define TSL2585_CFG3_INT_PINMAP_SHIFT 4   ///< Position of INT pin-map field
 #define TSL2585_CFG3_INT_PINMAP_INTERRUPT 0 ///< Route interrupt signal to INT
 
+#define TSL2585_CFG4_CALIBRATION_STEP_ENABLE_BIT 6 ///< Per-step calibration
+
 #define TSL2585_CFG5_THRESHOLD_CHANNEL_BITS 2  ///< Width of channel field
 #define TSL2585_CFG5_THRESHOLD_CHANNEL_SHIFT 4 ///< Position of channel field
 #define TSL2585_CFG5_PERSISTENCE_BITS 4        ///< Width of persistence field
@@ -82,6 +89,11 @@
 
 #define TSL2585_CFG8_MAX_GAIN_BITS 4  ///< Width of maximum gain field
 #define TSL2585_CFG8_MAX_GAIN_SHIFT 4 ///< Position of maximum gain field
+
+#define TSL2585_AGC_PATTERN_BITS 4     ///< Width of each AGC sequencer pattern
+#define TSL2585_AGC_PATTERN_SHIFT 4    ///< Position of each AGC pattern
+#define TSL2585_AGC_STEP0_PATTERN 0x01 ///< Enable AGC for sequencer step 0
+#define TSL2585_MOD_CALIB_AGC_ENABLE_BIT 5 ///< Link AGC to calibration cycle
 
 #define TSL2585_INT_INPUT_ENABLE_BIT 5  ///< INT direction bit position
 #define TSL2585_INT_INVERT_BIT 6        ///< INT polarity bit position
@@ -106,6 +118,7 @@
 #define TSL2585_MEAS_MODE1_MSB_POSITION_12 0x0C ///< Default 20-bit MSB
 #define TSL2585_SEQUENCER_DISABLED 0x00         ///< Disable a sequencer feature
 #define TSL2585_SEQUENCER_STEP0 0x01 ///< Enable sequencer step 0 only
+#define TSL2585_CALIBRATION_EVERY_ROUND 0x01 ///< Run calibration every round
 
 #define TSL2585_SAMPLE_TIME_250_US 179 ///< 250 us sample time register value
 #define TSL2585_DEFAULT_ALS_SAMPLE_COUNT 200       ///< 200 samples, or 50 ms
@@ -199,6 +212,7 @@ class Adafruit_TSL2585 {
 
   bool setGain(tsl2585_channel_t channel, tsl2585_gain_t gain);
   tsl2585_gain_t getGain(tsl2585_channel_t channel);
+  bool enableAGC(bool enabled);
 
   bool setResultFormat(uint8_t mode0, uint8_t mode1);
   bool setSampleTime(uint16_t register_value);
@@ -210,6 +224,7 @@ class Adafruit_TSL2585 {
                     uint8_t residual_mod2_wait_pattern);
   bool setMaximumGain(tsl2585_gain_t gain);
   bool setSMUX(uint8_t low, uint8_t high);
+  bool setCalibrationIterations(uint8_t iterations);
 
   bool dataReady();
   bool readData(tsl2585_data_t* data);

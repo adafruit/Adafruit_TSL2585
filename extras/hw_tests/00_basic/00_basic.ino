@@ -21,6 +21,11 @@ void setup() {
   }
   Serial.println("Begin succeeded");
 
+  if (!tsl2585.enableAGC(false)) {
+    haltWithFailure(F("Disabling AGC for the manual gain checks failed"));
+  }
+  Serial.println("AGC disabled for the manual gain checks");
+
   if (tsl2585.getDeviceID() != TSL2585_DEVICE_ID) {
     haltWithFailure(F("Device ID did not match 0x5C"));
   }

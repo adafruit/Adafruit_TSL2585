@@ -62,6 +62,12 @@ void loop() {
     Serial.print(data.uva);
     Serial.print(", UVA_calibrated:");
     Serial.print(data.uva_calibrated, 1);
+    Serial.print(", Photopic_gain_code:");
+    Serial.print((uint8_t)data.photopic_gain);
+    Serial.print(", IR_gain_code:");
+    Serial.print((uint8_t)data.infrared_gain);
+    Serial.print(", UVA_gain_code:");
+    Serial.print((uint8_t)data.uva_gain);
     Serial.print(", Saturated:");
     Serial.println(saturated);
   }
