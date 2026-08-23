@@ -53,22 +53,17 @@ void loop() {
       saturated = 1;
     }
 
-    // Comma-separated label:value fields also work with Serial Plotter.
+    // One stable set of comma-separated label:value fields works with both the
+    // Serial Monitor and Serial Plotter.
     Serial.print("Photopic:");
     Serial.print(data.photopic);
-    Serial.print(", IR:");
+    Serial.print(",Infrared:");
     Serial.print(data.infrared);
-    Serial.print(", UVA_raw:");
+    Serial.print(",UVA_raw:");
     Serial.print(data.uva);
-    Serial.print(", UVA_calibrated:");
+    Serial.print(",UVA_calibrated:");
     Serial.print(data.uva_calibrated, 1);
-    Serial.print(", Photopic_gain_code:");
-    Serial.print((uint8_t)data.photopic_gain);
-    Serial.print(", IR_gain_code:");
-    Serial.print((uint8_t)data.infrared_gain);
-    Serial.print(", UVA_gain_code:");
-    Serial.print((uint8_t)data.uva_gain);
-    Serial.print(", Saturated:");
+    Serial.print(",Saturated:");
     Serial.println(saturated);
   }
 
