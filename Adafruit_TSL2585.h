@@ -199,9 +199,6 @@ class Adafruit_TSL2585 {
   uint16_t _als_samples = TSL2585_DEFAULT_ALS_SAMPLES;
   tsl2585_gain_t _gains[3] = {TSL2585_GAIN_128X, TSL2585_GAIN_128X,
                               TSL2585_GAIN_128X};
-  uint8_t _device_id = 0;
-  uint8_t _revision_id = 0;
-  uint8_t _auxiliary_id = 0;
   uint8_t _uv_calibration = 127;
 
   bool configure();

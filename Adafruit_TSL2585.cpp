@@ -45,19 +45,12 @@ bool Adafruit_TSL2585::begin(uint8_t i2c_addr, TwoWire* wire) {
     return false;
   }
 
-  Adafruit_BusIO_Register id_reg(i2c_dev, TSL2585_REG_ID);
-  Adafruit_BusIO_Register revision_id_reg(i2c_dev, TSL2585_REG_REV_ID);
-  Adafruit_BusIO_Register auxiliary_id_reg(i2c_dev, TSL2585_REG_AUX_ID);
-  Adafruit_BusIO_Register uv_calibration_reg(i2c_dev, TSL2585_REG_UV_CALIB);
-
-  if (!id_reg.read(&_device_id) || _device_id != TSL2585_DEVICE_ID) {
+  if (getDeviceID() != TSL2585_DEVICE_ID) {
     return false;
   }
-  if (!revision_id_reg.read(&_revision_id) ||
-      !auxiliary_id_reg.read(&_auxiliary_id) ||
-      !uv_calibration_reg.read(&_uv_calibration)) {
-    return false;
-  }
+  getRevisionID();
+  getAuxiliaryID();
+  _uv_calibration = getUVCalibration();
 
   return configure();
 }
@@ -442,24 +435,28 @@ bool Adafruit_TSL2585::readGPIOInput() {
   return gpio_input_bit.read();
 }
 
-/*! @return The cached TSL2585 device identification byte. */
+/*! @return The TSL2585 device identification byte. */
 uint8_t Adafruit_TSL2585::getDeviceID() {
-  return _device_id;
+  Adafruit_BusIO_Register id_reg(i2c_dev, TSL2585_REG_ID);
+  return id_reg.read();
 }
 
-/*! @return The cached silicon revision identification byte. */
+/*! @return The silicon revision identification byte. */
 uint8_t Adafruit_TSL2585::getRevisionID() {
-  return _revision_id;
+  Adafruit_BusIO_Register revision_id_reg(i2c_dev, TSL2585_REG_REV_ID);
+  return revision_id_reg.read();
 }
 
-/*! @return The cached auxiliary identification byte. */
+/*! @return The auxiliary identification byte. */
 uint8_t Adafruit_TSL2585::getAuxiliaryID() {
-  return _auxiliary_id;
+  Adafruit_BusIO_Register auxiliary_id_reg(i2c_dev, TSL2585_REG_AUX_ID);
+  return auxiliary_id_reg.read();
 }
 
-/*! @return The cached factory UVA calibration byte, where 127 is nominal. */
+/*! @return The factory UVA calibration byte, where 127 is nominal. */
 uint8_t Adafruit_TSL2585::getUVCalibration() {
-  return _uv_calibration;
+  Adafruit_BusIO_Register uv_calibration_reg(i2c_dev, TSL2585_REG_UV_CALIB);
+  return uv_calibration_reg.read();
 }
 
 /*! @brief Configure the recommended one-step, three-channel ALS sequence. */
