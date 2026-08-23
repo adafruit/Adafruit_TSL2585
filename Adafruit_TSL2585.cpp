@@ -138,6 +138,11 @@ float Adafruit_TSL2585::getIntegrationTime() {
 
 /*!
  * @brief Set the manual gain for one optical channel.
+ *
+ * This safely stops ALS, writes the selected step-0 modulator gain, and starts
+ * ALS again. Photopic and IR share MEAS_SEQR_STEP0_MOD_GAINX_L; UVA uses
+ * MEAS_SEQR_STEP0_MOD_GAINX_H. See TSL2585 datasheet Figures 63 and 64.
+ *
  * @param channel The photopic, infrared, or UVA channel.
  * @param gain Gain from 0.5x through 4096x.
  * @return True when the register writes succeeded.
@@ -467,8 +472,24 @@ uint8_t Adafruit_TSL2585::getUVCalibration() {
   return uv_calibration_reg.read();
 }
 
-/*! @brief Set the register-result format and alignment. */
+/*!
+ * @brief Set the raw ALS result format and bit alignment.
+ *
+ * This advanced setter writes MEAS_MODE0 and MEAS_MODE1 exactly as supplied.
+ * MEAS_MODE0 controls ALS scaling and result behavior; MEAS_MODE1 controls the
+ * most-significant result-bit position and flicker FIFO metadata. See TSL2585
+ * datasheet Figures 21 and 22. Disable ALS before changing these registers;
+ * this function does not change PON or AEN.
+ *
+ * @param mode0 Complete MEAS_MODE0 register value.
+ * @param mode1 Complete MEAS_MODE1 register value.
+ * @return True when both register writes succeeded.
+ */
 bool Adafruit_TSL2585::setResultFormat(uint8_t mode0, uint8_t mode1) {
+  if (i2c_dev == nullptr) {
+    return false;
+  }
+
   // MEAS_MODE0 selects the result width and residual-data mode.
   Adafruit_BusIO_Register meas_mode0_reg(i2c_dev, TSL2585_REG_MEAS_MODE0);
 
@@ -478,24 +499,70 @@ bool Adafruit_TSL2585::setResultFormat(uint8_t mode0, uint8_t mode1) {
   return meas_mode0_reg.write(mode0) && meas_mode1_reg.write(mode1);
 }
 
-/*! @brief Set the modulator sample-time register. */
+/*!
+ * @brief Set the raw 11-bit modulator sample-time value.
+ *
+ * SAMPLE_TIME spans SAMPLE_TIME0 and SAMPLE_TIME1. With the default CFG7 clock
+ * divider, one count is a 1.388889 us modulator-clock step, so the period is
+ * (register_value + 1) steps. See TSL2585 datasheet Figures 23 and 24. Disable
+ * ALS before changing this field; this function does not change PON or AEN.
+ *
+ * @param register_value Sample-time register value from 0 through 2047.
+ * @return True when the value was valid and the register write succeeded.
+ */
 bool Adafruit_TSL2585::setSampleTime(uint16_t register_value) {
+  if (i2c_dev == nullptr || register_value > TSL2585_MAX_SAMPLE_TIME) {
+    return false;
+  }
+
   // SAMPLE_TIME0 sets each modulator sample period.
   Adafruit_BusIO_Register sample_time_reg(i2c_dev, TSL2585_REG_SAMPLE_TIME0, 2,
                                           LSBFIRST);
   return sample_time_reg.write(register_value);
 }
 
-/*! @brief Set an ALS integration length as an actual sample count. */
+/*!
+ * @brief Set the ALS integration length as an actual sample count.
+ *
+ * ALS_NR_SAMPLES stores one less than the requested count across registers
+ * ALS_NR_SAMPLES0 and ALS_NR_SAMPLES1. ALS integration time is the requested
+ * count multiplied by the sample period selected by setSampleTime(). See
+ * TSL2585 datasheet Figures 25 and 26. Disable ALS before changing this field;
+ * this function does not change PON or AEN.
+ *
+ * @param sample_count Number of samples from 1 through 2048.
+ * @return True when the value was valid and the register write succeeded.
+ */
 bool Adafruit_TSL2585::setIntegrationSamples(uint16_t sample_count) {
+  if (i2c_dev == nullptr || sample_count == 0 ||
+      sample_count > TSL2585_MAX_INTEGRATION_SAMPLES) {
+    return false;
+  }
+
   Adafruit_BusIO_Register als_samples_reg(i2c_dev, TSL2585_REG_ALS_NR_SAMPLES0,
                                           2, LSBFIRST);
   return als_samples_reg.write(sample_count - 1);
 }
 
-/*! @brief Set one channel's gain field without changing the ALS state. */
+/*!
+ * @brief Set one channel's gain field without changing the ALS state.
+ *
+ * This advanced setter writes the same step-0 gain fields as setGain(), but it
+ * does not change PON or AEN. Use it while ALS is disabled when several setup
+ * registers must be programmed together. Photopic and IR occupy the low and
+ * high nibbles of MEAS_SEQR_STEP0_MOD_GAINX_L; UVA occupies the low nibble of
+ * MEAS_SEQR_STEP0_MOD_GAINX_H. See TSL2585 datasheet Figures 63 and 64.
+ *
+ * @param channel The photopic, infrared, or UVA channel.
+ * @param gain Gain from 0.5x through 4096x.
+ * @return True when the register-field write succeeded.
+ */
 bool Adafruit_TSL2585::setGainValue(tsl2585_channel_t channel,
                                     tsl2585_gain_t gain) {
+  if (i2c_dev == nullptr) {
+    return false;
+  }
+
   uint16_t register_address = TSL2585_REG_STEP0_GAIN_L;
   uint8_t shift = TSL2585_PHOTOPIC_GAIN_SHIFT;
   if (channel == TSL2585_CHANNEL_UVA) {
@@ -510,11 +577,34 @@ bool Adafruit_TSL2585::setGainValue(tsl2585_channel_t channel,
   return gain_bits.write((uint8_t)gain);
 }
 
-/*! @brief Set the five ALS and flicker sequencer registers. */
-bool Adafruit_TSL2585::setSequencer(uint8_t flicker_steps, uint8_t als_steps,
-                                    uint8_t persistence_steps,
-                                    uint8_t residual0_steps,
-                                    uint8_t residual1_steps) {
+/*!
+ * @brief Set the raw ALS and flicker sequencer patterns.
+ *
+ * Each nibble is a four-step bit pattern: bit 0 selects sequencer step 0 and
+ * bit 3 selects step 3. The five bytes control flicker use by modulators 0/1,
+ * ALS and modulator-2 flicker use, persistence and VSYNC wait, residual use by
+ * modulators 0/1, and residual use by modulator 2 plus timer wait. See TSL2585
+ * datasheet Figures 58 through 62. Disable ALS before changing these registers;
+ * this function does not change PON or AEN.
+ *
+ * @param fd_mod01_pattern Complete MEAS_SEQR_FD_0 register value.
+ * @param als_fd_mod2_pattern Complete MEAS_SEQR_ALS_FD_1 register value.
+ * @param persistence_vsync_pattern Complete MEAS_SEQR_APERS_AND_VSYNC_WAIT
+ * register value.
+ * @param residual_mod01_pattern Complete MEAS_SEQR_RESIDUAL_0 register value.
+ * @param residual_mod2_wait_pattern Complete MEAS_SEQR_RESIDUAL_1_AND_WAIT
+ * register value.
+ * @return True when all five register writes succeeded.
+ */
+bool Adafruit_TSL2585::setSequencer(uint8_t fd_mod01_pattern,
+                                    uint8_t als_fd_mod2_pattern,
+                                    uint8_t persistence_vsync_pattern,
+                                    uint8_t residual_mod01_pattern,
+                                    uint8_t residual_mod2_wait_pattern) {
+  if (i2c_dev == nullptr) {
+    return false;
+  }
+
   // MEAS_SEQR_FD_0 selects flicker steps. MEAS_SEQR_ALS_FD_1 selects ALS steps,
   // and MEAS_SEQR_APERS selects which steps use interrupt persistence.
   Adafruit_BusIO_Register sequencer_fd_reg(i2c_dev, TSL2585_REG_MEAS_SEQR_FD_0);
@@ -530,15 +620,28 @@ bool Adafruit_TSL2585::setSequencer(uint8_t flicker_steps, uint8_t als_steps,
   Adafruit_BusIO_Register sequencer_residual1_reg(
       i2c_dev, TSL2585_REG_MEAS_SEQR_RESIDUAL_1);
 
-  return sequencer_fd_reg.write(flicker_steps) &&
-         sequencer_als_reg.write(als_steps) &&
-         sequencer_persistence_reg.write(persistence_steps) &&
-         sequencer_residual0_reg.write(residual0_steps) &&
-         sequencer_residual1_reg.write(residual1_steps);
+  return sequencer_fd_reg.write(fd_mod01_pattern) &&
+         sequencer_als_reg.write(als_fd_mod2_pattern) &&
+         sequencer_persistence_reg.write(persistence_vsync_pattern) &&
+         sequencer_residual0_reg.write(residual_mod01_pattern) &&
+         sequencer_residual1_reg.write(residual_mod2_wait_pattern);
 }
 
-/*! @brief Set the sequencer's maximum automatic gain. */
+/*!
+ * @brief Set the maximum gain available to every sequencer channel.
+ *
+ * This writes MEASUREMENT_SEQUENCER_MAX_MOD_GAIN in CFG8 without changing the
+ * AGC prediction reduction field. See TSL2585 datasheet Figure 50. Disable ALS
+ * before changing this field; this function does not change PON or AEN.
+ *
+ * @param gain Maximum permitted gain from 0.5x through 4096x.
+ * @return True when the register-field write succeeded.
+ */
 bool Adafruit_TSL2585::setMaximumGain(tsl2585_gain_t gain) {
+  if (i2c_dev == nullptr) {
+    return false;
+  }
+
   // CFG8 sets the sequencer gain ceiling.
   Adafruit_BusIO_Register cfg8_reg(i2c_dev, TSL2585_REG_CFG8);
   Adafruit_BusIO_RegisterBits maximum_gain_bits(
@@ -546,8 +649,24 @@ bool Adafruit_TSL2585::setMaximumGain(tsl2585_gain_t gain) {
   return maximum_gain_bits.write(gain);
 }
 
-/*! @brief Set the photodiode-to-modulator routing. */
+/*!
+ * @brief Set the raw step-0 photodiode-to-modulator routing.
+ *
+ * The low byte contains four two-bit fields for photodiodes 0 through 3. The
+ * low nibble of the high byte contains the fields for photodiodes 4 and 5;
+ * each field selects no connection or modulator 0, 1, or 2. See TSL2585
+ * datasheet Figures 71 and 72. Disable ALS before changing these registers;
+ * this function does not change PON or AEN.
+ *
+ * @param low Complete MEAS_SEQR_STEP0_MOD_PHDX_SMUX_L register value.
+ * @param high MEAS_SEQR_STEP0_MOD_PHDX_SMUX_H value from 0 through 0x0F.
+ * @return True when the value was valid and both register writes succeeded.
+ */
 bool Adafruit_TSL2585::setSMUX(uint8_t low, uint8_t high) {
+  if (i2c_dev == nullptr || high > TSL2585_SMUX_HIGH_MAX) {
+    return false;
+  }
+
   // STEP0_SMUX_L and _H route the photopic, IR, and UVA photodiodes to their
   // three modulators.
   Adafruit_BusIO_Register smux_low_reg(i2c_dev, TSL2585_REG_STEP0_SMUX_L);

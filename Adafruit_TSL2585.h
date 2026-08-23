@@ -109,6 +109,9 @@
 
 #define TSL2585_SAMPLE_TIME_250_US 179 ///< 250 us sample time register value
 #define TSL2585_DEFAULT_ALS_SAMPLE_COUNT 200       ///< 200 samples, or 50 ms
+#define TSL2585_MAX_SAMPLE_TIME 2047 ///< Largest 11-bit sample-time value
+#define TSL2585_MAX_INTEGRATION_SAMPLES 2048 ///< Largest ALS sample count
+#define TSL2585_SMUX_HIGH_MAX 0x0F ///< Largest valid step-0 SMUX high value
 #define TSL2585_MAX_INTERRUPT_THRESHOLD 0xFFFFFFUL ///< Largest ALS threshold
 
 typedef struct __attribute__((packed)) {
@@ -197,6 +200,17 @@ class Adafruit_TSL2585 {
   bool setGain(tsl2585_channel_t channel, tsl2585_gain_t gain);
   tsl2585_gain_t getGain(tsl2585_channel_t channel);
 
+  bool setResultFormat(uint8_t mode0, uint8_t mode1);
+  bool setSampleTime(uint16_t register_value);
+  bool setIntegrationSamples(uint16_t sample_count);
+  bool setGainValue(tsl2585_channel_t channel, tsl2585_gain_t gain);
+  bool setSequencer(uint8_t fd_mod01_pattern, uint8_t als_fd_mod2_pattern,
+                    uint8_t persistence_vsync_pattern,
+                    uint8_t residual_mod01_pattern,
+                    uint8_t residual_mod2_wait_pattern);
+  bool setMaximumGain(tsl2585_gain_t gain);
+  bool setSMUX(uint8_t low, uint8_t high);
+
   bool dataReady();
   bool readData(tsl2585_data_t* data);
   float calibrateUVA(uint16_t raw_uva);
@@ -221,15 +235,6 @@ class Adafruit_TSL2585 {
   uint8_t _uv_calibration = 127;
 
   bool configure();
-  bool setResultFormat(uint8_t mode0, uint8_t mode1);
-  bool setSampleTime(uint16_t register_value);
-  bool setIntegrationSamples(uint16_t sample_count);
-  bool setGainValue(tsl2585_channel_t channel, tsl2585_gain_t gain);
-  bool setSequencer(uint8_t flicker_steps, uint8_t als_steps,
-                    uint8_t persistence_steps, uint8_t residual0_steps,
-                    uint8_t residual1_steps);
-  bool setMaximumGain(tsl2585_gain_t gain);
-  bool setSMUX(uint8_t low, uint8_t high);
 };
 
 #endif
