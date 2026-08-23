@@ -165,7 +165,6 @@ class Adafruit_TSL2585 {
   ~Adafruit_TSL2585();
 
   bool begin(uint8_t i2c_addr = TSL2585_DEFAULT_ADDR, TwoWire* wire = &Wire);
-  bool isConnected();
   bool enable(bool enabled);
 
   bool setIntegrationTime(float milliseconds);

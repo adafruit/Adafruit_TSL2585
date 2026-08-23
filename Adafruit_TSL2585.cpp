@@ -56,14 +56,6 @@ bool Adafruit_TSL2585::begin(uint8_t i2c_addr, TwoWire* wire) {
 }
 
 /*!
- * @brief Check whether the configured I2C device acknowledges.
- * @return True when the sensor acknowledges its I2C address.
- */
-bool Adafruit_TSL2585::isConnected() {
-  return i2c_dev != nullptr && i2c_dev->detected();
-}
-
-/*!
  * @brief Enable or disable continuous ALS measurements.
  * @param enabled True to enable measurements, false to disable them.
  * @return True when the register writes succeeded.
