@@ -18,6 +18,30 @@
 
 #include "Adafruit_TSL2585.h"
 
+typedef struct __attribute__((packed)) {
+  uint8_t lower : 4;
+  uint8_t upper : 4;
+} tsl2585_gain_register_t;
+
+typedef struct __attribute__((packed)) {
+  uint8_t status;
+  uint16_t photopic;
+  uint16_t infrared;
+  uint16_t uva;
+  tsl2585_gain_register_t photopic_ir_gain;
+  tsl2585_gain_register_t uva_gain;
+} tsl2585_result_registers_t;
+
+typedef union {
+  tsl2585_result_registers_t registers;
+  uint8_t buffer[sizeof(tsl2585_result_registers_t)];
+} tsl2585_result_buffer_t;
+
+static_assert(sizeof(tsl2585_result_buffer_t) == 9,
+              "TSL2585 result block must be 9 bytes");
+static_assert(sizeof(tsl2585_gain_register_t) == 1,
+              "TSL2585 gain register must be 1 byte");
+
 /*! @brief Construct a new TSL2585 driver. */
 Adafruit_TSL2585::Adafruit_TSL2585() {}
 
@@ -235,22 +259,22 @@ bool Adafruit_TSL2585::readData(tsl2585_data_t* data) {
     return false;
   }
 
-  uint8_t result[TSL2585_ALS_RESULT_BLOCK_SIZE];
-  Adafruit_BusIO_Register als_result_reg(
-      i2c_dev, TSL2585_REG_ALS_STATUS, TSL2585_ALS_RESULT_BLOCK_SIZE, LSBFIRST);
-  if (!als_result_reg.read(result, TSL2585_ALS_RESULT_BLOCK_SIZE)) {
+  tsl2585_result_buffer_t result;
+  Adafruit_BusIO_Register als_result_reg(i2c_dev, TSL2585_REG_ALS_STATUS,
+                                         sizeof(result.buffer), LSBFIRST);
+  if (!als_result_reg.read(result.buffer, sizeof(result.buffer))) {
     return false;
   }
 
-  uint8_t als_status = result[0];
-  data->photopic = (uint16_t)result[1] | ((uint16_t)result[2] << 8);
-  data->infrared = (uint16_t)result[3] | ((uint16_t)result[4] << 8);
-  data->uva = (uint16_t)result[5] | ((uint16_t)result[6] << 8);
+  uint8_t als_status = result.registers.status;
+  data->photopic = result.registers.photopic;
+  data->infrared = result.registers.infrared;
+  data->uva = result.registers.uva;
   data->uva_calibrated = calibrateUVA(data->uva);
 
-  data->photopic_gain = (tsl2585_gain_t)(result[7] & TSL2585_GAIN_MASK);
-  data->infrared_gain = (tsl2585_gain_t)((result[7] >> 4) & TSL2585_GAIN_MASK);
-  data->uva_gain = (tsl2585_gain_t)(result[8] & TSL2585_GAIN_MASK);
+  data->photopic_gain = (tsl2585_gain_t)result.registers.photopic_ir_gain.lower;
+  data->infrared_gain = (tsl2585_gain_t)result.registers.photopic_ir_gain.upper;
+  data->uva_gain = (tsl2585_gain_t)result.registers.uva_gain.lower;
 
   bool digital_saturation = (status2 & TSL2585_STATUS2_DIGITAL_SATURATION) != 0;
   data->photopic_saturated =

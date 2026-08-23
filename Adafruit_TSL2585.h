@@ -112,7 +112,6 @@
 
 #define TSL2585_SAMPLE_TIME_250_US 179  ///< 250 us sample time register value
 #define TSL2585_DEFAULT_ALS_SAMPLES 199 ///< 200 samples, or 50 ms
-#define TSL2585_ALS_RESULT_BLOCK_SIZE 9 ///< ALS status/data block byte count
 #define TSL2585_MAX_INTERRUPT_THRESHOLD 0xFFFFFFUL ///< Largest ALS threshold
 
 /*!
