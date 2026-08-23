@@ -391,68 +391,66 @@ float Adafruit_TSL2585::calibrateUVA(uint16_t raw_uva) {
 /*!
  * @brief Normalize counts to the typical response at 1x gain.
  *
- * The TSL2585 datasheet Figure 6 characterizes each gain relative to 128x.
- * The high gain stages are not exact powers of two, so use the typical ratios
- * from that table and the characterized 128x-to-1x ratio instead of the nominal
- * gain labels. The result remains in counts at the configured integration time;
- * it is not lux or irradiance.
+ * The high gain stages are not exact powers of two, so use the typical gain
+ * multipliers derived from the TSL2585 datasheet Figure 6 instead of the
+ * nominal gain labels. The result remains in counts at the configured
+ * integration time; it is not lux or irradiance.
  *
  * @param counts Raw or factory-corrected counts at the reported gain.
  * @param gain Gain reported with the coherent measurement.
  * @return Typical 1x-equivalent counts.
  */
 float Adafruit_TSL2585::normalizeTo1x(float counts, tsl2585_gain_t gain) {
-  float ratio_to_128x = 1.0F;
+  float gain_multiplier = 1.0F;
 
   switch (gain) {
     case TSL2585_GAIN_0_5X:
-      ratio_to_128x = 1.0F / 249.13F;
+      gain_multiplier = 0.49713F;
       break;
     case TSL2585_GAIN_1X:
-      ratio_to_128x = 1.0F / 123.85F;
+      gain_multiplier = 1.0F;
       break;
     case TSL2585_GAIN_2X:
-      ratio_to_128x = 1.0F / 62.97F;
+      gain_multiplier = 1.96681F;
       break;
     case TSL2585_GAIN_4X:
-      ratio_to_128x = 1.0F / 31.72F;
+      gain_multiplier = 3.90448F;
       break;
     case TSL2585_GAIN_8X:
-      ratio_to_128x = 1.0F / 15.53F;
+      gain_multiplier = 7.97489F;
       break;
     case TSL2585_GAIN_16X:
-      ratio_to_128x = 1.0F / 7.97F;
+      gain_multiplier = 15.53952F;
       break;
     case TSL2585_GAIN_32X:
-      ratio_to_128x = 1.0F / 3.99F;
+      gain_multiplier = 31.0401F;
       break;
     case TSL2585_GAIN_64X:
-      ratio_to_128x = 1.0F / 2.01F;
+      gain_multiplier = 61.61692F;
       break;
     case TSL2585_GAIN_128X:
-      ratio_to_128x = 1.0F;
+      gain_multiplier = 123.85F;
       break;
     case TSL2585_GAIN_256X:
-      ratio_to_128x = 1.93F;
+      gain_multiplier = 239.0305F;
       break;
     case TSL2585_GAIN_512X:
-      ratio_to_128x = 3.80F;
+      gain_multiplier = 470.63F;
       break;
     case TSL2585_GAIN_1024X:
-      ratio_to_128x = 7.42F;
+      gain_multiplier = 918.967F;
       break;
     case TSL2585_GAIN_2048X:
-      ratio_to_128x = 14.06F;
+      gain_multiplier = 1741.331F;
       break;
     case TSL2585_GAIN_4096X:
-      ratio_to_128x = 25.35F;
+      gain_multiplier = 3139.5975F;
       break;
     default:
       break;
   }
 
-  float ratio_to_1x = ratio_to_128x * TSL2585_GAIN_RATIO_128X_TO_1X;
-  return counts / ratio_to_1x;
+  return counts / gain_multiplier;
 }
 
 /*!

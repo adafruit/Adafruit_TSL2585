@@ -111,7 +111,6 @@
 #define TSL2585_PHOTOPIC_GAIN_SHIFT 0 ///< Photopic gain field position
 #define TSL2585_IR_GAIN_SHIFT 4       ///< IR gain field position
 #define TSL2585_UVA_GAIN_SHIFT 0      ///< UVA gain field position
-#define TSL2585_GAIN_RATIO_128X_TO_1X 123.85F ///< Typical 128x/1x response
 
 #define TSL2585_ALS_STATUS_PHOTOPIC_SATURATION 0x20 ///< Modulator 0 saturated
 #define TSL2585_ALS_STATUS_IR_SATURATION 0x10       ///< Modulator 1 saturated
