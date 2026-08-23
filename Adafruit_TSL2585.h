@@ -60,7 +60,7 @@
 #define TSL2585_ENABLE_PON_BIT 0 ///< Oscillator and power enable bit position
 #define TSL2585_ENABLE_AEN_BIT 1 ///< Ambient light enable bit position
 
-#define TSL2585_STATUS2_DATA_VALID 0x40 ///< New coherent ALS result available
+#define TSL2585_STATUS2_DATA_VALID_BIT 6        ///< ALS data-valid bit position
 #define TSL2585_STATUS2_DIGITAL_SATURATION 0x10 ///< ALS result overflowed
 #define TSL2585_STATUS_AINT 0x08  ///< ALS threshold interrupt asserted
 #define TSL2585_STATUS_AINT_BIT 3 ///< Position of ALS interrupt status

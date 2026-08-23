@@ -208,12 +208,10 @@ bool Adafruit_TSL2585::dataReady() {
     return false;
   }
 
-  uint8_t status2;
   Adafruit_BusIO_Register status2_reg(i2c_dev, TSL2585_REG_STATUS2);
-  if (!status2_reg.read(&status2)) {
-    return false;
-  }
-  return (status2 & TSL2585_STATUS2_DATA_VALID) != 0;
+  Adafruit_BusIO_RegisterBits data_valid_bit(&status2_reg, 1,
+                                             TSL2585_STATUS2_DATA_VALID_BIT);
+  return data_valid_bit.read();
 }
 
 /*!
