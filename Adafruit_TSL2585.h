@@ -113,6 +113,30 @@
 #define TSL2585_DEFAULT_ALS_SAMPLES 199 ///< 200 samples, or 50 ms
 #define TSL2585_MAX_INTERRUPT_THRESHOLD 0xFFFFFFUL ///< Largest ALS threshold
 
+typedef struct __attribute__((packed)) {
+  uint8_t lower : 4;
+  uint8_t upper : 4;
+} tsl2585_gain_register_t;
+
+typedef struct __attribute__((packed)) {
+  uint8_t status;
+  uint16_t photopic;
+  uint16_t infrared;
+  uint16_t uva;
+  tsl2585_gain_register_t photopic_ir_gain;
+  tsl2585_gain_register_t uva_gain;
+} tsl2585_result_registers_t;
+
+typedef union {
+  tsl2585_result_registers_t registers;
+  uint8_t buffer[sizeof(tsl2585_result_registers_t)];
+} tsl2585_result_buffer_t;
+
+static_assert(sizeof(tsl2585_result_buffer_t) == 9,
+              "TSL2585 result block must be 9 bytes");
+static_assert(sizeof(tsl2585_gain_register_t) == 1,
+              "TSL2585 gain register must be 1 byte");
+
 /*!
  * @brief Optical channels after applying the recommended TSL2585 SMUX map.
  */
