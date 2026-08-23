@@ -3,6 +3,7 @@
 #define UVA_LED_PIN 4
 
 const uint8_t SAMPLES_PER_LEVEL = 6;
+const uint8_t MEASUREMENT_READ_RETRIES = 2;
 const uint16_t DATA_READY_TIMEOUT_MS = 1000;
 const float GAIN_TEST_INTEGRATION_MS = 10;
 const float MAXIMUM_INTEGRATION_GAIN_COUNT = 3500;
@@ -60,10 +61,10 @@ void setup() {
   Serial.println(F("TSL2585 gain and integration time hardware test"));
   Serial.println(
       F("Keep the sensor and room lighting steady during this test."));
-  Serial.println(F("Aim the D4 365 nm LED at the sensor for a UVA signal."));
-  Serial.println(F("The 4096x preflight must not saturate."));
+  Serial.println(F("Room light provides the photopic and IR signals."));
+  Serial.println(F("D4 turns on only when the UVA signal is needed."));
   Serial.println(
-      F("If asked, reduce room light or move the D4 LED and restart."));
+      F("Saturated gain levels are reported and excluded from trends."));
 
   pinMode(UVA_LED_PIN, OUTPUT);
   digitalWrite(UVA_LED_PIN, LOW);
@@ -78,10 +79,6 @@ void setup() {
     haltWithFailure(F("Disabling AGC for the manual gain sweep failed"));
   }
   Serial.println(F("AGC disabled for the manual gain sweep"));
-
-  digitalWrite(UVA_LED_PIN, HIGH);
-  delay(100);
-  Serial.println(F("D4 UVA LED is on for a steady optical stimulus"));
 
   tsl2585_gain_t integration_gains[3];
   if (!testGain(TSL2585_CHANNEL_PHOTOPIC, &integration_gains[0]) ||
@@ -101,6 +98,15 @@ void loop() {}
 
 bool testGain(tsl2585_channel_t channel, tsl2585_gain_t *integration_gain) {
   Serial.println();
+  if (channel == TSL2585_CHANNEL_UVA) {
+    digitalWrite(UVA_LED_PIN, HIGH);
+    delay(100);
+    Serial.println(F("D4 UVA LED is on for the UVA gain sweep"));
+  } else {
+    digitalWrite(UVA_LED_PIN, LOW);
+    Serial.println(F("D4 UVA LED is off for this gain sweep"));
+  }
+
   Serial.print(F("Checking maximum gain for the "));
   printChannel(channel);
   Serial.println(F(" channel"));
@@ -158,10 +164,9 @@ bool testGain(tsl2585_channel_t channel, tsl2585_gain_t *integration_gain) {
   }
 
   if (!maximum_gain_ready) {
-    Serial.println(F("4096x is still saturated at minimum integration."));
     Serial.println(
-        F("Reduce room light or move the D4 LED farther away and restart."));
-    return false;
+        F("  WARNING: 4096x is saturated at minimum integration."));
+    Serial.println(F("  Continuing; saturated levels will not test trends."));
   }
 
   expected_gains[channel] = TSL2585_GAIN_0_5X;
@@ -327,14 +332,24 @@ bool testIntegrationTime(const tsl2585_gain_t *gains) {
 }
 
 bool readFreshData(tsl2585_data_t *data) {
-  uint32_t start_ms = millis();
-  while (!tsl2585.dataReady()) {
-    if (millis() - start_ms >= DATA_READY_TIMEOUT_MS) {
-      return false;
+  for (uint8_t attempt = 0; attempt <= MEASUREMENT_READ_RETRIES; attempt++) {
+    uint32_t start_ms = millis();
+    while (!tsl2585.dataReady()) {
+      if (millis() - start_ms >= DATA_READY_TIMEOUT_MS) {
+        return false;
+      }
+      delay(1);
+    }
+
+    if (tsl2585.readData(data)) {
+      if (attempt > 0) {
+        Serial.println(F("  Recovered a transient measurement read."));
+      }
+      return true;
     }
     delay(1);
   }
-  return tsl2585.readData(data);
+  return false;
 }
 
 bool readAverages(const tsl2585_gain_t *expected_gains, float *averages,
