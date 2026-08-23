@@ -104,16 +104,13 @@ bool Adafruit_TSL2585::setIntegrationTime(float milliseconds) {
   }
 
   uint16_t sample_count = (uint16_t)(milliseconds * 4.0F + 0.5F);
-  uint16_t register_value = sample_count - 1;
 
   // Figures 25 and 26 do not define a live update for this two-byte field.
   // Stop ALS so the next conversion uses one complete integration setting.
   if (!enable(false)) {
     return false;
   }
-  Adafruit_BusIO_Register als_samples_reg(i2c_dev, TSL2585_REG_ALS_NR_SAMPLES0,
-                                          2, LSBFIRST);
-  bool success = als_samples_reg.write(register_value);
+  bool success = writeIntegrationSamples(sample_count);
 
   if (!enable(true)) {
     return false;
@@ -156,18 +153,7 @@ bool Adafruit_TSL2585::setGain(tsl2585_channel_t channel, tsl2585_gain_t gain) {
     return false;
   }
 
-  uint16_t register_address = TSL2585_REG_STEP0_GAIN_L;
-  uint8_t shift = TSL2585_PHOTOPIC_GAIN_SHIFT;
-  if (channel == TSL2585_CHANNEL_UVA) {
-    register_address = TSL2585_REG_STEP0_GAIN_H;
-    shift = TSL2585_UVA_GAIN_SHIFT;
-  } else if (channel == TSL2585_CHANNEL_IR) {
-    shift = TSL2585_IR_GAIN_SHIFT;
-  }
-
-  Adafruit_BusIO_Register gain_reg(i2c_dev, register_address);
-  Adafruit_BusIO_RegisterBits gain_bits(&gain_reg, TSL2585_GAIN_BITS, shift);
-  bool success = gain_bits.write((uint8_t)gain);
+  bool success = writeGain(channel, gain);
 
   if (!enable(true)) {
     return false;
@@ -481,24 +467,57 @@ uint8_t Adafruit_TSL2585::getUVCalibration() {
   return uv_calibration_reg.read();
 }
 
-/*! @brief Configure the recommended one-step, three-channel ALS sequence. */
-bool Adafruit_TSL2585::configure() {
-  // ENABLE register Figure 20 says to set PON only after configuration.
-  if (!enable(false)) {
+/*! @brief Configure the register-result format and alignment. */
+bool Adafruit_TSL2585::configureResultFormat() {
+  // MEAS_MODE0 selects 16-bit full-count results without residual data.
+  Adafruit_BusIO_Register meas_mode0_reg(i2c_dev, TSL2585_REG_MEAS_MODE0);
+
+  // MEAS_MODE1 places the most-significant result bits at the expected offset.
+  Adafruit_BusIO_Register meas_mode1_reg(i2c_dev, TSL2585_REG_MEAS_MODE1);
+
+  return meas_mode0_reg.write(TSL2585_MEAS_MODE0_FULL_COUNTS) &&
+         meas_mode1_reg.write(TSL2585_MEAS_MODE1_MSB_POSITION_12);
+}
+
+/*! @brief Configure the recommended sample period and integration length. */
+bool Adafruit_TSL2585::configureSampleTiming() {
+  // SAMPLE_TIME0 sets each modulator sample period.
+  Adafruit_BusIO_Register sample_time_reg(i2c_dev, TSL2585_REG_SAMPLE_TIME0, 2,
+                                          LSBFIRST);
+  if (!sample_time_reg.write(TSL2585_SAMPLE_TIME_250_US)) {
     return false;
   }
 
-  // MEAS_MODE0 and MEAS_MODE1 select the result format and bit alignment.
-  Adafruit_BusIO_Register meas_mode0_reg(i2c_dev, TSL2585_REG_MEAS_MODE0);
-  Adafruit_BusIO_Register meas_mode1_reg(i2c_dev, TSL2585_REG_MEAS_MODE1);
+  // ALS_NR_SAMPLES0 sets how many samples are accumulated into one ALS result.
+  return writeIntegrationSamples(TSL2585_DEFAULT_ALS_SAMPLE_COUNT);
+}
 
-  // SAMPLE_TIME0 sets each modulator sample period; ALS_NR_SAMPLES0 sets how
-  // many samples are accumulated into one ALS result.
-  Adafruit_BusIO_Register sample_time_reg(i2c_dev, TSL2585_REG_SAMPLE_TIME0, 2,
-                                          LSBFIRST);
+/*! @brief Write an ALS integration length as an actual sample count. */
+bool Adafruit_TSL2585::writeIntegrationSamples(uint16_t sample_count) {
   Adafruit_BusIO_Register als_samples_reg(i2c_dev, TSL2585_REG_ALS_NR_SAMPLES0,
                                           2, LSBFIRST);
+  return als_samples_reg.write(sample_count - 1);
+}
 
+/*! @brief Write one channel's gain field without changing the ALS state. */
+bool Adafruit_TSL2585::writeGain(tsl2585_channel_t channel,
+                                 tsl2585_gain_t gain) {
+  uint16_t register_address = TSL2585_REG_STEP0_GAIN_L;
+  uint8_t shift = TSL2585_PHOTOPIC_GAIN_SHIFT;
+  if (channel == TSL2585_CHANNEL_UVA) {
+    register_address = TSL2585_REG_STEP0_GAIN_H;
+    shift = TSL2585_UVA_GAIN_SHIFT;
+  } else if (channel == TSL2585_CHANNEL_IR) {
+    shift = TSL2585_IR_GAIN_SHIFT;
+  }
+
+  Adafruit_BusIO_Register gain_reg(i2c_dev, register_address);
+  Adafruit_BusIO_RegisterBits gain_bits(&gain_reg, TSL2585_GAIN_BITS, shift);
+  return gain_bits.write((uint8_t)gain);
+}
+
+/*! @brief Configure the recommended one-step ALS sequencer. */
+bool Adafruit_TSL2585::configureSequencer() {
   // MEAS_SEQR_FD_0 disables flicker steps. MEAS_SEQR_ALS_FD_1 enables ALS step
   // 0, and MEAS_SEQR_APERS applies interrupt persistence to that step.
   Adafruit_BusIO_Register sequencer_fd_reg(i2c_dev, TSL2585_REG_MEAS_SEQR_FD_0);
@@ -514,34 +533,49 @@ bool Adafruit_TSL2585::configure() {
   Adafruit_BusIO_Register sequencer_residual1_reg(
       i2c_dev, TSL2585_REG_MEAS_SEQR_RESIDUAL_1);
 
+  return sequencer_fd_reg.write(TSL2585_SEQUENCER_DISABLED) &&
+         sequencer_als_reg.write(TSL2585_SEQUENCER_STEP0) &&
+         sequencer_persistence_reg.write(TSL2585_SEQUENCER_STEP0) &&
+         sequencer_residual0_reg.write(TSL2585_SEQUENCER_DISABLED) &&
+         sequencer_residual1_reg.write(TSL2585_SEQUENCER_DISABLED);
+}
+
+/*! @brief Configure the sequencer gain limit and default channel gains. */
+bool Adafruit_TSL2585::configureGainControl() {
   // CFG8 sets the sequencer gain ceiling.
   Adafruit_BusIO_Register cfg8_reg(i2c_dev, TSL2585_REG_CFG8);
   Adafruit_BusIO_RegisterBits maximum_gain_bits(
       &cfg8_reg, TSL2585_CFG8_MAX_GAIN_BITS, TSL2585_CFG8_MAX_GAIN_SHIFT);
+  if (!maximum_gain_bits.write(TSL2585_GAIN_4096X)) {
+    return false;
+  }
 
   // STEP0_GAIN_L sets photopic and IR gain; STEP0_GAIN_H sets UVA gain.
-  Adafruit_BusIO_Register gain_low_reg(i2c_dev, TSL2585_REG_STEP0_GAIN_L);
-  Adafruit_BusIO_Register gain_high_reg(i2c_dev, TSL2585_REG_STEP0_GAIN_H);
+  return writeGain(TSL2585_CHANNEL_PHOTOPIC, TSL2585_GAIN_128X) &&
+         writeGain(TSL2585_CHANNEL_IR, TSL2585_GAIN_128X) &&
+         writeGain(TSL2585_CHANNEL_UVA, TSL2585_GAIN_128X);
+}
 
+/*! @brief Route the photopic, IR, and UVA photodiodes to their modulators. */
+bool Adafruit_TSL2585::configureSMUX() {
   // STEP0_SMUX_L and _H route the photopic, IR, and UVA photodiodes to their
   // three modulators.
   Adafruit_BusIO_Register smux_low_reg(i2c_dev, TSL2585_REG_STEP0_SMUX_L);
   Adafruit_BusIO_Register smux_high_reg(i2c_dev, TSL2585_REG_STEP0_SMUX_H);
 
-  if (!meas_mode0_reg.write(TSL2585_MEAS_MODE0_FULL_COUNTS) ||
-      !meas_mode1_reg.write(TSL2585_MEAS_MODE1_MSB_POSITION_12) ||
-      !sample_time_reg.write(TSL2585_SAMPLE_TIME_250_US) ||
-      !als_samples_reg.write(TSL2585_DEFAULT_ALS_SAMPLES) ||
-      !sequencer_fd_reg.write(TSL2585_SEQUENCER_DISABLED) ||
-      !sequencer_als_reg.write(TSL2585_SEQUENCER_STEP0) ||
-      !sequencer_persistence_reg.write(TSL2585_SEQUENCER_STEP0) ||
-      !sequencer_residual0_reg.write(TSL2585_SEQUENCER_DISABLED) ||
-      !sequencer_residual1_reg.write(TSL2585_SEQUENCER_DISABLED) ||
-      !maximum_gain_bits.write(TSL2585_GAIN_4096X) ||
-      !gain_low_reg.write(TSL2585_DEFAULT_GAIN_L) ||
-      !gain_high_reg.write(TSL2585_DEFAULT_GAIN_H) ||
-      !smux_low_reg.write(TSL2585_RECOMMENDED_SMUX_L) ||
-      !smux_high_reg.write(TSL2585_RECOMMENDED_SMUX_H)) {
+  return smux_low_reg.write(TSL2585_RECOMMENDED_SMUX_L) &&
+         smux_high_reg.write(TSL2585_RECOMMENDED_SMUX_H);
+}
+
+/*! @brief Configure the recommended one-step, three-channel ALS sequence. */
+bool Adafruit_TSL2585::configure() {
+  // ENABLE register Figure 20 says to set PON only after configuration.
+  if (!enable(false)) {
+    return false;
+  }
+
+  if (!configureResultFormat() || !configureSampleTiming() ||
+      !configureSequencer() || !configureGainControl() || !configureSMUX()) {
     return false;
   }
 

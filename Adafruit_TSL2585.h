@@ -106,11 +106,9 @@
 #define TSL2585_MEAS_MODE1_MSB_POSITION_12 0x0C ///< Default 20-bit MSB
 #define TSL2585_SEQUENCER_DISABLED 0x00         ///< Disable a sequencer feature
 #define TSL2585_SEQUENCER_STEP0 0x01 ///< Enable sequencer step 0 only
-#define TSL2585_DEFAULT_GAIN_L 0x88  ///< 128x gain on modulators 0 and 1
-#define TSL2585_DEFAULT_GAIN_H 0x08  ///< 128x gain on modulator 2
 
-#define TSL2585_SAMPLE_TIME_250_US 179  ///< 250 us sample time register value
-#define TSL2585_DEFAULT_ALS_SAMPLES 199 ///< 200 samples, or 50 ms
+#define TSL2585_SAMPLE_TIME_250_US 179 ///< 250 us sample time register value
+#define TSL2585_DEFAULT_ALS_SAMPLE_COUNT 200       ///< 200 samples, or 50 ms
 #define TSL2585_MAX_INTERRUPT_THRESHOLD 0xFFFFFFUL ///< Largest ALS threshold
 
 typedef struct __attribute__((packed)) {
@@ -223,6 +221,13 @@ class Adafruit_TSL2585 {
   uint8_t _uv_calibration = 127;
 
   bool configure();
+  bool configureResultFormat();
+  bool configureSampleTiming();
+  bool writeIntegrationSamples(uint16_t sample_count);
+  bool writeGain(tsl2585_channel_t channel, tsl2585_gain_t gain);
+  bool configureSequencer();
+  bool configureGainControl();
+  bool configureSMUX();
 };
 
 #endif
