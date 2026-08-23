@@ -321,7 +321,7 @@ bool Adafruit_TSL2585::dataReady() {
  * STATUS2 is read before ALS_STATUS as required by the device. The complete
  * ALS_STATUS through ALS_STATUS3 block is then read in one transaction so the
  * channel values, saturation flags, and actual gains belong to one cycle. The
- * actual gains are then used to calculate typical 128x-equivalent counts.
+ * actual gains are then used to calculate typical 1x-equivalent counts.
  *
  * @param data Destination for the result.
  * @return True when the register data was read successfully.
@@ -357,10 +357,10 @@ bool Adafruit_TSL2585::readData(tsl2585_data_t* data) {
   data->uva_gain = (tsl2585_gain_t)result.registers.uva_gain.lower;
 
   data->photopic_normalized =
-      normalizeTo128x(data->photopic, data->photopic_gain);
+      normalizeTo1x(data->photopic, data->photopic_gain);
   data->infrared_normalized =
-      normalizeTo128x(data->infrared, data->infrared_gain);
-  data->uva_normalized = normalizeTo128x(data->uva_calibrated, data->uva_gain);
+      normalizeTo1x(data->infrared, data->infrared_gain);
+  data->uva_normalized = normalizeTo1x(data->uva_calibrated, data->uva_gain);
 
   bool digital_saturation = (status2 & TSL2585_STATUS2_DIGITAL_SATURATION) != 0;
   data->photopic_saturated =
@@ -389,18 +389,19 @@ float Adafruit_TSL2585::calibrateUVA(uint16_t raw_uva) {
 }
 
 /*!
- * @brief Normalize counts to the typical response at 128x gain.
+ * @brief Normalize counts to the typical response at 1x gain.
  *
  * The TSL2585 datasheet Figure 6 characterizes each gain relative to 128x.
  * The high gain stages are not exact powers of two, so use the typical ratios
- * from that table instead of the nominal gain labels. The result remains in
- * counts at the configured integration time; it is not lux or irradiance.
+ * from that table and the characterized 128x-to-1x ratio instead of the nominal
+ * gain labels. The result remains in counts at the configured integration time;
+ * it is not lux or irradiance.
  *
  * @param counts Raw or factory-corrected counts at the reported gain.
  * @param gain Gain reported with the coherent measurement.
- * @return Typical 128x-equivalent counts.
+ * @return Typical 1x-equivalent counts.
  */
-float Adafruit_TSL2585::normalizeTo128x(float counts, tsl2585_gain_t gain) {
+float Adafruit_TSL2585::normalizeTo1x(float counts, tsl2585_gain_t gain) {
   float ratio_to_128x = 1.0F;
 
   switch (gain) {
@@ -450,7 +451,8 @@ float Adafruit_TSL2585::normalizeTo128x(float counts, tsl2585_gain_t gain) {
       break;
   }
 
-  return counts / ratio_to_128x;
+  float ratio_to_1x = ratio_to_128x * TSL2585_GAIN_RATIO_128X_TO_1X;
+  return counts / ratio_to_1x;
 }
 
 /*!

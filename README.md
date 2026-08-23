@@ -47,7 +47,7 @@ calibration can slow the measurement rate. See section 2.5 of the ams OSRAM
 [basic-settings application note](https://look.ams-osram.com/m/34f87e9823e25d2d/original/TSL2585-ALS-flicker-Basic-settings-and-read-out-of-results.pdf).
 
 `readData()` returns raw counts, the actual gain used for each channel, and
-typical 128x-equivalent normalized counts. The normalized UVA result also
+typical 1x-equivalent normalized counts. The normalized UVA result also
 includes the sensor's factory OTP correction. These values remain counts at the
 configured integration time; they are not lux or irradiance.
 

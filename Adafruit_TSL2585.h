@@ -111,6 +111,7 @@
 #define TSL2585_PHOTOPIC_GAIN_SHIFT 0 ///< Photopic gain field position
 #define TSL2585_IR_GAIN_SHIFT 4       ///< IR gain field position
 #define TSL2585_UVA_GAIN_SHIFT 0      ///< UVA gain field position
+#define TSL2585_GAIN_RATIO_128X_TO_1X 123.85F ///< Typical 128x/1x response
 
 #define TSL2585_ALS_STATUS_PHOTOPIC_SATURATION 0x20 ///< Modulator 0 saturated
 #define TSL2585_ALS_STATUS_IR_SATURATION 0x10       ///< Modulator 1 saturated
@@ -193,9 +194,9 @@ typedef struct {
   uint16_t infrared;    ///< Raw full-count infrared result
   uint16_t uva;         ///< Raw full-count UVA result
   float uva_calibrated; ///< UVA counts corrected with the part's OTP factor
-  float photopic_normalized;    ///< Typical photopic counts normalized to 128x
-  float infrared_normalized;    ///< Typical infrared counts normalized to 128x
-  float uva_normalized;         ///< OTP-corrected UVA counts normalized to 128x
+  float photopic_normalized;    ///< Typical photopic counts normalized to 1x
+  float infrared_normalized;    ///< Typical infrared counts normalized to 1x
+  float uva_normalized;         ///< OTP-corrected UVA counts normalized to 1x
   tsl2585_gain_t photopic_gain; ///< Gain used for the photopic result
   tsl2585_gain_t infrared_gain; ///< Gain used for the infrared result
   tsl2585_gain_t uva_gain;      ///< Gain used for the UVA result
@@ -259,7 +260,7 @@ class Adafruit_TSL2585 {
   uint8_t _uv_calibration = 127;
 
   bool configure();
-  float normalizeTo128x(float counts, tsl2585_gain_t gain);
+  float normalizeTo1x(float counts, tsl2585_gain_t gain);
 };
 
 #endif

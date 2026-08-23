@@ -39,7 +39,7 @@ void setup() {
   Serial.println(" ms");
 
   Serial.println();
-  Serial.println("Photopic 128x\tInfrared 128x\tUVA 128x\tSaturated");
+  Serial.println("Photopic 1x\tInfrared 1x\tUVA 1x\tSaturated");
 }
 
 void loop() {
