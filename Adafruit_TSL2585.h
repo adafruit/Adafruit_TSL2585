@@ -84,7 +84,7 @@
 #define TSL2585_CFG3_INT_PINMAP_SHIFT 4   ///< Position of INT pin-map field
 #define TSL2585_CFG3_INT_PINMAP_INTERRUPT 0 ///< Route interrupt signal to INT
 
-#define TSL2585_CFG4_CALIBRATION_STEP_ENABLE_BIT 6 ///< Per-step calibration
+#define TSL2585_CFG4_CALIBRATION_PER_STEP_BIT 6 ///< Schedule by sequencer step
 
 #define TSL2585_CFG5_THRESHOLD_CHANNEL_BITS 2  ///< Width of channel field
 #define TSL2585_CFG5_THRESHOLD_CHANNEL_SHIFT 4 ///< Position of channel field
@@ -133,17 +133,17 @@
 #define TSL2585_MAX_INTERRUPT_THRESHOLD 0xFFFFFFUL ///< Largest ALS threshold
 
 typedef struct __attribute__((packed)) {
-  uint8_t lower : 4;
-  uint8_t upper : 4;
+  uint8_t lower_nibble : 4;
+  uint8_t upper_nibble : 4;
 } tsl2585_gain_register_t;
 
 typedef struct __attribute__((packed)) {
-  uint8_t status;
-  uint16_t photopic;
-  uint16_t infrared;
-  uint16_t uva;
-  tsl2585_gain_register_t photopic_ir_gain;
-  tsl2585_gain_register_t uva_gain;
+  uint8_t als_status;
+  uint16_t als_data0;
+  uint16_t als_data1;
+  uint16_t als_data2;
+  tsl2585_gain_register_t als_data01_gain_status;
+  tsl2585_gain_register_t als_data2_gain_status;
 } tsl2585_result_registers_t;
 
 typedef union {
@@ -193,9 +193,9 @@ typedef struct {
   uint16_t infrared;    ///< Raw full-count infrared result
   uint16_t uva;         ///< Raw full-count UVA result
   float uva_calibrated; ///< UVA counts corrected with the part's OTP factor
-  float photopic_normalized;    ///< Typical photopic counts normalized to 1x
-  float infrared_normalized;    ///< Typical infrared counts normalized to 1x
-  float uva_normalized;         ///< OTP-corrected UVA counts normalized to 1x
+  float photopic_1x;    ///< Typical photopic counts at 1x-equivalent gain
+  float infrared_1x;    ///< Typical infrared counts at 1x-equivalent gain
+  float uva_1x;         ///< Corrected UVA counts at 1x-equivalent gain
   tsl2585_gain_t photopic_gain; ///< Gain used for the photopic result
   tsl2585_gain_t infrared_gain; ///< Gain used for the infrared result
   tsl2585_gain_t uva_gain;      ///< Gain used for the UVA result
@@ -224,16 +224,16 @@ class Adafruit_TSL2585 {
   bool enableAGC(bool enabled);
 
   bool setResultFormat(uint8_t mode0, uint8_t mode1);
-  bool setSampleTime(uint16_t register_value);
+  bool setSampleTime(uint16_t sample_time_register_value);
   bool setIntegrationSamples(uint16_t sample_count);
   bool setGainValue(tsl2585_channel_t channel, tsl2585_gain_t gain);
   bool setSequencer(uint8_t fd_mod01_pattern, uint8_t als_fd_mod2_pattern,
                     uint8_t persistence_vsync_pattern,
                     uint8_t residual_mod01_pattern,
                     uint8_t residual_mod2_wait_pattern);
-  bool setMaximumGain(tsl2585_gain_t gain);
-  bool setSMUX(uint8_t low, uint8_t high);
-  bool setCalibrationIterations(uint8_t iterations);
+  bool setMaximumGain(tsl2585_gain_t maximum_gain);
+  bool setSMUX(uint8_t smux_low, uint8_t smux_high);
+  bool setCalibrationInterval(uint8_t calibration_interval);
 
   bool dataReady();
   bool readData(tsl2585_data_t* data);
@@ -245,7 +245,7 @@ class Adafruit_TSL2585 {
   bool alsInterruptActive();
   bool clearALSInterrupt();
 
-  bool setGPIOOutput(bool high);
+  bool setGPIOOutput(bool released);
   bool enableGPIOInput(bool enabled);
   bool readGPIOInput();
 
@@ -259,7 +259,7 @@ class Adafruit_TSL2585 {
   uint8_t _uv_calibration = 127;
 
   bool configure();
-  float normalizeTo1x(float counts, tsl2585_gain_t gain);
+  float normalizeGainTo1x(float counts, tsl2585_gain_t gain);
 };
 
 #endif

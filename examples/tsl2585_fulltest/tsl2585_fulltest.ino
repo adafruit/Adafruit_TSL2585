@@ -13,10 +13,10 @@
 Adafruit_TSL2585 tsl2585;
 
 // Common settings to adjust.
-const float integrationTime = 50; // 0.25 ms to 90 ms in 0.25 ms steps
+const float integrationTimeMs = 50; // 0.25 ms to 90 ms in 0.25 ms steps
 const bool useAutomaticGain = true;
 const tsl2585_gain_t maximumAutomaticGain = TSL2585_GAIN_4096X;
-const uint8_t calibrationIterations = 1; // Run AGC every sequencer round
+const uint8_t calibrationInterval = 1; // Run AGC every sequencer round
 
 // These gains are used when useAutomaticGain is false.
 const tsl2585_gain_t photopicGain = TSL2585_GAIN_128X;
@@ -57,7 +57,7 @@ void setup() {
   Serial.println(tsl2585.getUVCalibration());
 
   Serial.println(F("\n--- Integration time ---"));
-  if (!tsl2585.setIntegrationTime(integrationTime)) {
+  if (!tsl2585.setIntegrationTime(integrationTimeMs)) {
     haltWithMessage(F("Could not set the integration time."));
   }
   Serial.print(F("Integration time: "));
@@ -74,7 +74,7 @@ void setup() {
     if (!tsl2585.setMaximumGain(maximumAutomaticGain)) {
       haltWithMessage(F("Could not set the maximum automatic gain."));
     }
-    if (!tsl2585.setCalibrationIterations(calibrationIterations)) {
+    if (!tsl2585.setCalibrationInterval(calibrationInterval)) {
       haltWithMessage(F("Could not set the calibration schedule."));
     }
     if (!tsl2585.enableAGC(true)) {
@@ -84,7 +84,7 @@ void setup() {
     Serial.print(F("Automatic gain control enabled, maximum gain "));
     printGain(maximumAutomaticGain);
     Serial.print(F(", calibration every "));
-    Serial.print(calibrationIterations);
+    Serial.print(calibrationInterval);
     Serial.println(F(" sequencer round(s)"));
   } else {
     if (!tsl2585.enableAGC(false)) {
@@ -154,15 +154,15 @@ void loop() {
   tsl2585_data_t data;
   if (tsl2585.readData(&data)) {
     Serial.print(F("Photopic 1x: "));
-    Serial.print(data.photopic_normalized, 1);
+    Serial.print(data.photopic_1x, 1);
     Serial.print(F(" ("));
     printGain(data.photopic_gain);
     Serial.print(F(")   Infrared 1x: "));
-    Serial.print(data.infrared_normalized, 1);
+    Serial.print(data.infrared_1x, 1);
     Serial.print(F(" ("));
     printGain(data.infrared_gain);
     Serial.print(F(")   UVA 1x: "));
-    Serial.print(data.uva_normalized, 1);
+    Serial.print(data.uva_1x, 1);
     Serial.print(F(" ("));
     printGain(data.uva_gain);
     Serial.print(F(")   Saturated: "));
@@ -296,7 +296,7 @@ void configureAdvancedSettings() {
     haltWithMessage(F("Could not set the photodiode mapping."));
   }
 
-  if (!tsl2585.setCalibrationIterations(calibrationIterations)) {
+  if (!tsl2585.setCalibrationInterval(calibrationInterval)) {
     haltWithMessage(F("Could not set the calibration schedule."));
   }
 

@@ -167,13 +167,13 @@ float Adafruit_TSL2585::getIntegrationTime() {
     return 0;
   }
 
-  uint16_t register_value;
+  uint16_t als_sample_count_register_value;
   Adafruit_BusIO_Register als_samples_reg(i2c_dev, TSL2585_REG_ALS_NR_SAMPLES0,
                                           2, LSBFIRST);
-  if (!als_samples_reg.read(&register_value)) {
+  if (!als_samples_reg.read(&als_sample_count_register_value)) {
     return 0;
   }
-  return (register_value + 1) * 0.25F;
+  return (als_sample_count_register_value + 1) * 0.25F;
 }
 
 /*!
@@ -218,17 +218,18 @@ tsl2585_gain_t Adafruit_TSL2585::getGain(tsl2585_channel_t channel) {
     return TSL2585_GAIN_0_5X;
   }
 
-  uint16_t register_address = TSL2585_REG_STEP0_GAIN_L;
-  uint8_t shift = TSL2585_PHOTOPIC_GAIN_SHIFT;
+  uint16_t gain_register_address = TSL2585_REG_STEP0_GAIN_L;
+  uint8_t gain_field_shift = TSL2585_PHOTOPIC_GAIN_SHIFT;
   if (channel == TSL2585_CHANNEL_UVA) {
-    register_address = TSL2585_REG_STEP0_GAIN_H;
-    shift = TSL2585_UVA_GAIN_SHIFT;
+    gain_register_address = TSL2585_REG_STEP0_GAIN_H;
+    gain_field_shift = TSL2585_UVA_GAIN_SHIFT;
   } else if (channel == TSL2585_CHANNEL_IR) {
-    shift = TSL2585_IR_GAIN_SHIFT;
+    gain_field_shift = TSL2585_IR_GAIN_SHIFT;
   }
 
-  Adafruit_BusIO_Register gain_reg(i2c_dev, register_address);
-  Adafruit_BusIO_RegisterBits gain_bits(&gain_reg, TSL2585_GAIN_BITS, shift);
+  Adafruit_BusIO_Register gain_reg(i2c_dev, gain_register_address);
+  Adafruit_BusIO_RegisterBits gain_bits(&gain_reg, TSL2585_GAIN_BITS,
+                                        gain_field_shift);
   return (tsl2585_gain_t)gain_bits.read();
 }
 
@@ -242,7 +243,7 @@ tsl2585_gain_t Adafruit_TSL2585::getGain(tsl2585_channel_t channel) {
  * section 2.5 and datasheet Figures 46, 74, 76, and 80.
  *
  * MOD_CALIB_CFG0 controls how often AGC runs. The library default is every
- * sequencer round. Use setCalibrationIterations() while ALS is disabled to
+ * sequencer round. Use setCalibrationInterval() while ALS is disabled to
  * select another schedule. That schedule is shared with auto-zero calibration,
  * which can add measurement time.
  *
@@ -263,35 +264,39 @@ bool Adafruit_TSL2585::enableAGC(bool enabled) {
   // CFG4 selects per-round or per-step calibration. Figure 46 requires
   // per-round calibration when AGC is enabled.
   Adafruit_BusIO_Register cfg4_reg(i2c_dev, TSL2585_REG_CFG4);
-  Adafruit_BusIO_RegisterBits calibration_step_enable_bit(
-      &cfg4_reg, 1, TSL2585_CFG4_CALIBRATION_STEP_ENABLE_BIT);
+  Adafruit_BusIO_RegisterBits calibration_per_step_bit(
+      &cfg4_reg, 1, TSL2585_CFG4_CALIBRATION_PER_STEP_BIT);
 
   // STEP1_SMUX_H selects the sequencer steps that use saturation AGC.
-  Adafruit_BusIO_Register saturation_agc_reg(i2c_dev, TSL2585_REG_STEP1_SMUX_H);
-  Adafruit_BusIO_RegisterBits saturation_agc_pattern(
-      &saturation_agc_reg, TSL2585_AGC_PATTERN_BITS, TSL2585_AGC_PATTERN_SHIFT);
+  Adafruit_BusIO_Register step1_smux_high_reg(i2c_dev,
+                                              TSL2585_REG_STEP1_SMUX_H);
+  Adafruit_BusIO_RegisterBits saturation_agc_pattern_bits(
+      &step1_smux_high_reg, TSL2585_AGC_PATTERN_BITS,
+      TSL2585_AGC_PATTERN_SHIFT);
 
   // STEP2_SMUX_H selects the sequencer steps that use predictive AGC.
-  Adafruit_BusIO_Register predictive_agc_reg(i2c_dev, TSL2585_REG_STEP2_SMUX_H);
-  Adafruit_BusIO_RegisterBits predictive_agc_pattern(
-      &predictive_agc_reg, TSL2585_AGC_PATTERN_BITS, TSL2585_AGC_PATTERN_SHIFT);
+  Adafruit_BusIO_Register step2_smux_high_reg(i2c_dev,
+                                              TSL2585_REG_STEP2_SMUX_H);
+  Adafruit_BusIO_RegisterBits predictive_agc_pattern_bits(
+      &step2_smux_high_reg, TSL2585_AGC_PATTERN_BITS,
+      TSL2585_AGC_PATTERN_SHIFT);
 
   // MOD_CALIB_CFG2 links the selected AGC methods to the calibration schedule.
-  Adafruit_BusIO_Register calibration_features_reg(i2c_dev,
-                                                   TSL2585_REG_MOD_CALIB_CFG2);
-  Adafruit_BusIO_RegisterBits agc_enable_bit(&calibration_features_reg, 1,
+  Adafruit_BusIO_Register mod_calib_cfg2_reg(i2c_dev,
+                                             TSL2585_REG_MOD_CALIB_CFG2);
+  Adafruit_BusIO_RegisterBits agc_enable_bit(&mod_calib_cfg2_reg, 1,
                                              TSL2585_MOD_CALIB_AGC_ENABLE_BIT);
 
   bool success;
   if (enabled) {
-    success = calibration_step_enable_bit.write(0) &&
-              saturation_agc_pattern.write(TSL2585_AGC_STEP0_PATTERN) &&
-              predictive_agc_pattern.write(TSL2585_AGC_STEP0_PATTERN) &&
+    success = calibration_per_step_bit.write(0) &&
+              saturation_agc_pattern_bits.write(TSL2585_AGC_STEP0_PATTERN) &&
+              predictive_agc_pattern_bits.write(TSL2585_AGC_STEP0_PATTERN) &&
               agc_enable_bit.write(1);
   } else {
     success = agc_enable_bit.write(0) &&
-              saturation_agc_pattern.write(TSL2585_SEQUENCER_DISABLED) &&
-              predictive_agc_pattern.write(TSL2585_SEQUENCER_DISABLED);
+              saturation_agc_pattern_bits.write(TSL2585_SEQUENCER_DISABLED) &&
+              predictive_agc_pattern_bits.write(TSL2585_SEQUENCER_DISABLED);
   }
 
   if (!enable(true)) {
@@ -332,9 +337,9 @@ bool Adafruit_TSL2585::readData(tsl2585_data_t* data) {
   }
 
   // STATUS2 reports digital saturation for the current result.
-  uint8_t status2;
-  Adafruit_BusIO_Register status2_reg(i2c_dev, TSL2585_REG_STATUS2);
-  if (!status2_reg.read(&status2)) {
+  uint8_t device_status2;
+  Adafruit_BusIO_Register device_status2_reg(i2c_dev, TSL2585_REG_STATUS2);
+  if (!device_status2_reg.read(&device_status2)) {
     return false;
   }
 
@@ -346,30 +351,32 @@ bool Adafruit_TSL2585::readData(tsl2585_data_t* data) {
     return false;
   }
 
-  uint8_t als_status = result.registers.status;
-  data->photopic = result.registers.photopic;
-  data->infrared = result.registers.infrared;
-  data->uva = result.registers.uva;
+  uint8_t als_status = result.registers.als_status;
+  data->photopic = result.registers.als_data0;
+  data->infrared = result.registers.als_data1;
+  data->uva = result.registers.als_data2;
   data->uva_calibrated = calibrateUVA(data->uva);
 
-  data->photopic_gain = (tsl2585_gain_t)result.registers.photopic_ir_gain.lower;
-  data->infrared_gain = (tsl2585_gain_t)result.registers.photopic_ir_gain.upper;
-  data->uva_gain = (tsl2585_gain_t)result.registers.uva_gain.lower;
+  data->photopic_gain =
+      (tsl2585_gain_t)result.registers.als_data01_gain_status.lower_nibble;
+  data->infrared_gain =
+      (tsl2585_gain_t)result.registers.als_data01_gain_status.upper_nibble;
+  data->uva_gain =
+      (tsl2585_gain_t)result.registers.als_data2_gain_status.lower_nibble;
 
-  data->photopic_normalized =
-      normalizeTo1x(data->photopic, data->photopic_gain);
-  data->infrared_normalized =
-      normalizeTo1x(data->infrared, data->infrared_gain);
-  data->uva_normalized = normalizeTo1x(data->uva_calibrated, data->uva_gain);
+  data->photopic_1x = normalizeGainTo1x(data->photopic, data->photopic_gain);
+  data->infrared_1x = normalizeGainTo1x(data->infrared, data->infrared_gain);
+  data->uva_1x = normalizeGainTo1x(data->uva_calibrated, data->uva_gain);
 
-  bool digital_saturation = (status2 & TSL2585_STATUS2_DIGITAL_SATURATION) != 0;
+  bool als_digital_saturation =
+      (device_status2 & TSL2585_STATUS2_DIGITAL_SATURATION) != 0;
   data->photopic_saturated =
-      digital_saturation ||
+      als_digital_saturation ||
       (als_status & TSL2585_ALS_STATUS_PHOTOPIC_SATURATION) != 0;
   data->infrared_saturated =
-      digital_saturation ||
+      als_digital_saturation ||
       (als_status & TSL2585_ALS_STATUS_IR_SATURATION) != 0;
-  data->uva_saturated = digital_saturation ||
+  data->uva_saturated = als_digital_saturation ||
                         (als_status & TSL2585_ALS_STATUS_UVA_SATURATION) != 0;
 
   return true;
@@ -381,11 +388,11 @@ bool Adafruit_TSL2585::readData(tsl2585_data_t* data) {
  * @return Factory-corrected UVA counts.
  */
 float Adafruit_TSL2585::calibrateUVA(uint16_t raw_uva) {
-  float correction = 1.0F - ((_uv_calibration - 127.0F) / 100.0F);
-  if (correction <= 0.0F) {
+  float uv_calibration_divisor = 1.0F - ((_uv_calibration - 127.0F) / 100.0F);
+  if (uv_calibration_divisor <= 0.0F) {
     return raw_uva;
   }
-  return raw_uva / correction;
+  return raw_uva / uv_calibration_divisor;
 }
 
 /*!
@@ -400,57 +407,57 @@ float Adafruit_TSL2585::calibrateUVA(uint16_t raw_uva) {
  * @param gain Gain reported with the coherent measurement.
  * @return Typical 1x-equivalent counts.
  */
-float Adafruit_TSL2585::normalizeTo1x(float counts, tsl2585_gain_t gain) {
-  float gain_multiplier = 1.0F;
+float Adafruit_TSL2585::normalizeGainTo1x(float counts, tsl2585_gain_t gain) {
+  float typical_response_multiplier = 1.0F;
 
   switch (gain) {
     case TSL2585_GAIN_0_5X:
-      gain_multiplier = 0.49713F;
+      typical_response_multiplier = 0.49713F;
       break;
     case TSL2585_GAIN_1X:
-      gain_multiplier = 1.0F;
+      typical_response_multiplier = 1.0F;
       break;
     case TSL2585_GAIN_2X:
-      gain_multiplier = 1.96681F;
+      typical_response_multiplier = 1.96681F;
       break;
     case TSL2585_GAIN_4X:
-      gain_multiplier = 3.90448F;
+      typical_response_multiplier = 3.90448F;
       break;
     case TSL2585_GAIN_8X:
-      gain_multiplier = 7.97489F;
+      typical_response_multiplier = 7.97489F;
       break;
     case TSL2585_GAIN_16X:
-      gain_multiplier = 15.53952F;
+      typical_response_multiplier = 15.53952F;
       break;
     case TSL2585_GAIN_32X:
-      gain_multiplier = 31.0401F;
+      typical_response_multiplier = 31.0401F;
       break;
     case TSL2585_GAIN_64X:
-      gain_multiplier = 61.61692F;
+      typical_response_multiplier = 61.61692F;
       break;
     case TSL2585_GAIN_128X:
-      gain_multiplier = 123.85F;
+      typical_response_multiplier = 123.85F;
       break;
     case TSL2585_GAIN_256X:
-      gain_multiplier = 239.0305F;
+      typical_response_multiplier = 239.0305F;
       break;
     case TSL2585_GAIN_512X:
-      gain_multiplier = 470.63F;
+      typical_response_multiplier = 470.63F;
       break;
     case TSL2585_GAIN_1024X:
-      gain_multiplier = 918.967F;
+      typical_response_multiplier = 918.967F;
       break;
     case TSL2585_GAIN_2048X:
-      gain_multiplier = 1741.331F;
+      typical_response_multiplier = 1741.331F;
       break;
     case TSL2585_GAIN_4096X:
-      gain_multiplier = 3139.5975F;
+      typical_response_multiplier = 3139.5975F;
       break;
     default:
       break;
   }
 
-  return counts / gain_multiplier;
+  return counts / typical_response_multiplier;
 }
 
 /*!
@@ -526,10 +533,11 @@ bool Adafruit_TSL2585::enableALSInterrupt(bool enabled) {
       &cfg3_reg, TSL2585_CFG3_INT_PINMAP_BITS, TSL2585_CFG3_INT_PINMAP_SHIFT);
 
   // VSYNC_GPIO_INT makes INT an active-low output instead of an input.
-  Adafruit_BusIO_Register gpio_reg(i2c_dev, TSL2585_REG_VSYNC_GPIO_INT);
+  Adafruit_BusIO_Register vsync_gpio_int_reg(i2c_dev,
+                                             TSL2585_REG_VSYNC_GPIO_INT);
   Adafruit_BusIO_RegisterBits int_input_enable_bit(
-      &gpio_reg, 1, TSL2585_INT_INPUT_ENABLE_BIT);
-  Adafruit_BusIO_RegisterBits int_invert_bit(&gpio_reg, 1,
+      &vsync_gpio_int_reg, 1, TSL2585_INT_INPUT_ENABLE_BIT);
+  Adafruit_BusIO_RegisterBits int_invert_bit(&vsync_gpio_int_reg, 1,
                                              TSL2585_INT_INVERT_BIT);
   return int_pinmap_bits.write(TSL2585_CFG3_INT_PINMAP_INTERRUPT) &&
          int_input_enable_bit.write(0) && int_invert_bit.write(0) &&
@@ -566,10 +574,10 @@ bool Adafruit_TSL2585::clearALSInterrupt() {
 
 /*!
  * @brief Release or pull low the open-drain VSYNC/GPIO output.
- * @param high True to release the output, false to pull it low.
+ * @param released True to release the output, false to pull it low.
  * @return True when the GPIO routing and output writes succeeded.
  */
-bool Adafruit_TSL2585::setGPIOOutput(bool high) {
+bool Adafruit_TSL2585::setGPIOOutput(bool released) {
   if (i2c_dev == nullptr) {
     return false;
   }
@@ -580,17 +588,18 @@ bool Adafruit_TSL2585::setGPIOOutput(bool high) {
       &cfg3_reg, TSL2585_CFG3_GPIO_PINMAP_BITS, TSL2585_CFG3_GPIO_PINMAP_SHIFT);
 
   // VSYNC_GPIO_INT sets the GPIO direction, polarity, and open-drain state.
-  Adafruit_BusIO_Register gpio_reg(i2c_dev, TSL2585_REG_VSYNC_GPIO_INT);
-  Adafruit_BusIO_RegisterBits gpio_invert_bit(&gpio_reg, 1,
+  Adafruit_BusIO_Register vsync_gpio_int_reg(i2c_dev,
+                                             TSL2585_REG_VSYNC_GPIO_INT);
+  Adafruit_BusIO_RegisterBits gpio_invert_bit(&vsync_gpio_int_reg, 1,
                                               TSL2585_GPIO_INVERT_BIT);
   Adafruit_BusIO_RegisterBits gpio_input_enable_bit(
-      &gpio_reg, 1, TSL2585_GPIO_INPUT_ENABLE_BIT);
-  Adafruit_BusIO_RegisterBits gpio_output_bit(&gpio_reg, 1,
+      &vsync_gpio_int_reg, 1, TSL2585_GPIO_INPUT_ENABLE_BIT);
+  Adafruit_BusIO_RegisterBits gpio_output_bit(&vsync_gpio_int_reg, 1,
                                               TSL2585_GPIO_OUTPUT_BIT);
 
   return gpio_pinmap_bits.write(TSL2585_CFG3_GPIO_PINMAP_OUTPUT) &&
          gpio_invert_bit.write(0) && gpio_input_enable_bit.write(0) &&
-         gpio_output_bit.write(high ? 1 : 0);
+         gpio_output_bit.write(released ? 1 : 0);
 }
 
 /*!
@@ -604,10 +613,11 @@ bool Adafruit_TSL2585::enableGPIOInput(bool enabled) {
   }
 
   // VSYNC_GPIO_INT releases the open-drain output before enabling input mode.
-  Adafruit_BusIO_Register gpio_reg(i2c_dev, TSL2585_REG_VSYNC_GPIO_INT);
+  Adafruit_BusIO_Register vsync_gpio_int_reg(i2c_dev,
+                                             TSL2585_REG_VSYNC_GPIO_INT);
   Adafruit_BusIO_RegisterBits gpio_input_enable_bit(
-      &gpio_reg, 1, TSL2585_GPIO_INPUT_ENABLE_BIT);
-  Adafruit_BusIO_RegisterBits gpio_output_bit(&gpio_reg, 1,
+      &vsync_gpio_int_reg, 1, TSL2585_GPIO_INPUT_ENABLE_BIT);
+  Adafruit_BusIO_RegisterBits gpio_output_bit(&vsync_gpio_int_reg, 1,
                                               TSL2585_GPIO_OUTPUT_BIT);
 
   return gpio_output_bit.write(1) &&
@@ -624,8 +634,9 @@ bool Adafruit_TSL2585::readGPIOInput() {
   }
 
   // VSYNC_GPIO_INT reports the logic level currently present on the GPIO pin.
-  Adafruit_BusIO_Register gpio_reg(i2c_dev, TSL2585_REG_VSYNC_GPIO_INT);
-  Adafruit_BusIO_RegisterBits gpio_input_bit(&gpio_reg, 1,
+  Adafruit_BusIO_Register vsync_gpio_int_reg(i2c_dev,
+                                             TSL2585_REG_VSYNC_GPIO_INT);
+  Adafruit_BusIO_RegisterBits gpio_input_bit(&vsync_gpio_int_reg, 1,
                                              TSL2585_GPIO_INPUT_BIT);
   return gpio_input_bit.read();
 }
@@ -686,21 +697,24 @@ bool Adafruit_TSL2585::setResultFormat(uint8_t mode0, uint8_t mode1) {
  *
  * SAMPLE_TIME spans SAMPLE_TIME0 and SAMPLE_TIME1. With the default CFG7 clock
  * divider, one count is a 1.388889 us modulator-clock step, so the period is
- * (register_value + 1) steps. See TSL2585 datasheet Figures 23 and 24. Disable
- * ALS before changing this field; this function does not change PON or AEN.
+ * (sample_time_register_value + 1) steps. See TSL2585 datasheet Figures 23 and
+ * 24. Disable ALS before changing this field; this function does not change PON
+ * or AEN.
  *
- * @param register_value Sample-time register value from 0 through 2047.
+ * @param sample_time_register_value Sample-time register value from 0 through
+ * 2047.
  * @return True when the value was valid and the register write succeeded.
  */
-bool Adafruit_TSL2585::setSampleTime(uint16_t register_value) {
-  if (i2c_dev == nullptr || register_value > TSL2585_MAX_SAMPLE_TIME) {
+bool Adafruit_TSL2585::setSampleTime(uint16_t sample_time_register_value) {
+  if (i2c_dev == nullptr ||
+      sample_time_register_value > TSL2585_MAX_SAMPLE_TIME) {
     return false;
   }
 
   // SAMPLE_TIME0 sets each modulator sample period.
   Adafruit_BusIO_Register sample_time_reg(i2c_dev, TSL2585_REG_SAMPLE_TIME0, 2,
                                           LSBFIRST);
-  return sample_time_reg.write(register_value);
+  return sample_time_reg.write(sample_time_register_value);
 }
 
 /*!
@@ -745,17 +759,18 @@ bool Adafruit_TSL2585::setGainValue(tsl2585_channel_t channel,
     return false;
   }
 
-  uint16_t register_address = TSL2585_REG_STEP0_GAIN_L;
-  uint8_t shift = TSL2585_PHOTOPIC_GAIN_SHIFT;
+  uint16_t gain_register_address = TSL2585_REG_STEP0_GAIN_L;
+  uint8_t gain_field_shift = TSL2585_PHOTOPIC_GAIN_SHIFT;
   if (channel == TSL2585_CHANNEL_UVA) {
-    register_address = TSL2585_REG_STEP0_GAIN_H;
-    shift = TSL2585_UVA_GAIN_SHIFT;
+    gain_register_address = TSL2585_REG_STEP0_GAIN_H;
+    gain_field_shift = TSL2585_UVA_GAIN_SHIFT;
   } else if (channel == TSL2585_CHANNEL_IR) {
-    shift = TSL2585_IR_GAIN_SHIFT;
+    gain_field_shift = TSL2585_IR_GAIN_SHIFT;
   }
 
-  Adafruit_BusIO_Register gain_reg(i2c_dev, register_address);
-  Adafruit_BusIO_RegisterBits gain_bits(&gain_reg, TSL2585_GAIN_BITS, shift);
+  Adafruit_BusIO_Register gain_reg(i2c_dev, gain_register_address);
+  Adafruit_BusIO_RegisterBits gain_bits(&gain_reg, TSL2585_GAIN_BITS,
+                                        gain_field_shift);
   return gain_bits.write((uint8_t)gain);
 }
 
@@ -789,24 +804,25 @@ bool Adafruit_TSL2585::setSequencer(uint8_t fd_mod01_pattern,
 
   // MEAS_SEQR_FD_0 selects flicker steps. MEAS_SEQR_ALS_FD_1 selects ALS steps,
   // and MEAS_SEQR_APERS selects which steps use interrupt persistence.
-  Adafruit_BusIO_Register sequencer_fd_reg(i2c_dev, TSL2585_REG_MEAS_SEQR_FD_0);
-  Adafruit_BusIO_Register sequencer_als_reg(i2c_dev,
-                                            TSL2585_REG_MEAS_SEQR_ALS_FD_1);
-  Adafruit_BusIO_Register sequencer_persistence_reg(
-      i2c_dev, TSL2585_REG_MEAS_SEQR_APERS);
+  Adafruit_BusIO_Register meas_seqr_fd_0_reg(i2c_dev,
+                                             TSL2585_REG_MEAS_SEQR_FD_0);
+  Adafruit_BusIO_Register meas_seqr_als_fd_1_reg(
+      i2c_dev, TSL2585_REG_MEAS_SEQR_ALS_FD_1);
+  Adafruit_BusIO_Register meas_seqr_apers_reg(i2c_dev,
+                                              TSL2585_REG_MEAS_SEQR_APERS);
 
   // MEAS_SEQR_RESIDUAL_0 and _1 select residual measurements for all three
   // modulators.
-  Adafruit_BusIO_Register sequencer_residual0_reg(
+  Adafruit_BusIO_Register meas_seqr_residual_0_reg(
       i2c_dev, TSL2585_REG_MEAS_SEQR_RESIDUAL_0);
-  Adafruit_BusIO_Register sequencer_residual1_reg(
+  Adafruit_BusIO_Register meas_seqr_residual_1_reg(
       i2c_dev, TSL2585_REG_MEAS_SEQR_RESIDUAL_1);
 
-  return sequencer_fd_reg.write(fd_mod01_pattern) &&
-         sequencer_als_reg.write(als_fd_mod2_pattern) &&
-         sequencer_persistence_reg.write(persistence_vsync_pattern) &&
-         sequencer_residual0_reg.write(residual_mod01_pattern) &&
-         sequencer_residual1_reg.write(residual_mod2_wait_pattern);
+  return meas_seqr_fd_0_reg.write(fd_mod01_pattern) &&
+         meas_seqr_als_fd_1_reg.write(als_fd_mod2_pattern) &&
+         meas_seqr_apers_reg.write(persistence_vsync_pattern) &&
+         meas_seqr_residual_0_reg.write(residual_mod01_pattern) &&
+         meas_seqr_residual_1_reg.write(residual_mod2_wait_pattern);
 }
 
 /*!
@@ -816,10 +832,10 @@ bool Adafruit_TSL2585::setSequencer(uint8_t fd_mod01_pattern,
  * AGC prediction reduction field. See TSL2585 datasheet Figure 50. Disable ALS
  * before changing this field; this function does not change PON or AEN.
  *
- * @param gain Maximum permitted gain from 0.5x through 4096x.
+ * @param maximum_gain Maximum permitted gain from 0.5x through 4096x.
  * @return True when the register-field write succeeded.
  */
-bool Adafruit_TSL2585::setMaximumGain(tsl2585_gain_t gain) {
+bool Adafruit_TSL2585::setMaximumGain(tsl2585_gain_t maximum_gain) {
   if (i2c_dev == nullptr) {
     return false;
   }
@@ -828,7 +844,7 @@ bool Adafruit_TSL2585::setMaximumGain(tsl2585_gain_t gain) {
   Adafruit_BusIO_Register cfg8_reg(i2c_dev, TSL2585_REG_CFG8);
   Adafruit_BusIO_RegisterBits maximum_gain_bits(
       &cfg8_reg, TSL2585_CFG8_MAX_GAIN_BITS, TSL2585_CFG8_MAX_GAIN_SHIFT);
-  return maximum_gain_bits.write(gain);
+  return maximum_gain_bits.write(maximum_gain);
 }
 
 /*!
@@ -840,12 +856,12 @@ bool Adafruit_TSL2585::setMaximumGain(tsl2585_gain_t gain) {
  * datasheet Figures 71 and 72. Disable ALS before changing these registers;
  * this function does not change PON or AEN.
  *
- * @param low Complete MEAS_SEQR_STEP0_MOD_PHDX_SMUX_L register value.
- * @param high MEAS_SEQR_STEP0_MOD_PHDX_SMUX_H value from 0 through 0x0F.
+ * @param smux_low Complete MEAS_SEQR_STEP0_MOD_PHDX_SMUX_L register value.
+ * @param smux_high MEAS_SEQR_STEP0_MOD_PHDX_SMUX_H value from 0 through 0x0F.
  * @return True when the value was valid and both register writes succeeded.
  */
-bool Adafruit_TSL2585::setSMUX(uint8_t low, uint8_t high) {
-  if (i2c_dev == nullptr || high > TSL2585_SMUX_HIGH_MAX) {
+bool Adafruit_TSL2585::setSMUX(uint8_t smux_low, uint8_t smux_high) {
+  if (i2c_dev == nullptr || smux_high > TSL2585_SMUX_HIGH_MAX) {
     return false;
   }
 
@@ -854,7 +870,7 @@ bool Adafruit_TSL2585::setSMUX(uint8_t low, uint8_t high) {
   Adafruit_BusIO_Register smux_low_reg(i2c_dev, TSL2585_REG_STEP0_SMUX_L);
   Adafruit_BusIO_Register smux_high_reg(i2c_dev, TSL2585_REG_STEP0_SMUX_H);
 
-  return smux_low_reg.write(low) && smux_high_reg.write(high);
+  return smux_low_reg.write(smux_low) && smux_high_reg.write(smux_high);
 }
 
 /*!
@@ -866,17 +882,17 @@ bool Adafruit_TSL2585::setSMUX(uint8_t low, uint8_t high) {
  * start. See TSL2585 datasheet Figure 79. Disable ALS before changing this
  * register; this function does not change PON or AEN.
  *
- * @param iterations Calibration schedule from 0 through 255.
+ * @param calibration_interval Calibration schedule from 0 through 255.
  * @return True when the register write succeeded.
  */
-bool Adafruit_TSL2585::setCalibrationIterations(uint8_t iterations) {
+bool Adafruit_TSL2585::setCalibrationInterval(uint8_t calibration_interval) {
   if (i2c_dev == nullptr) {
     return false;
   }
 
-  Adafruit_BusIO_Register calibration_iterations_reg(
-      i2c_dev, TSL2585_REG_MOD_CALIB_CFG0);
-  return calibration_iterations_reg.write(iterations);
+  Adafruit_BusIO_Register calibration_interval_reg(i2c_dev,
+                                                   TSL2585_REG_MOD_CALIB_CFG0);
+  return calibration_interval_reg.write(calibration_interval);
 }
 
 /*!
@@ -903,7 +919,7 @@ bool Adafruit_TSL2585::configure() {
       !setSequencer(TSL2585_SEQUENCER_DISABLED, TSL2585_SEQUENCER_STEP0,
                     TSL2585_SEQUENCER_STEP0, TSL2585_SEQUENCER_DISABLED,
                     TSL2585_SEQUENCER_DISABLED) ||
-      !setCalibrationIterations(TSL2585_CALIBRATION_EVERY_ROUND) ||
+      !setCalibrationInterval(TSL2585_CALIBRATION_EVERY_ROUND) ||
       !setMaximumGain(TSL2585_GAIN_4096X) ||
       !setGainValue(TSL2585_CHANNEL_PHOTOPIC, TSL2585_GAIN_128X) ||
       !setGainValue(TSL2585_CHANNEL_IR, TSL2585_GAIN_128X) ||

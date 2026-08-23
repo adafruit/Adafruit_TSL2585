@@ -46,11 +46,11 @@ void loop() {
     // Keep the same numeric label:value fields on every line so the Arduino
     // Serial Plotter can graph each series.
     Serial.print("Photopic_1x:");
-    Serial.print(data.photopic_normalized, 1);
+    Serial.print(data.photopic_1x, 1);
     Serial.print(",Infrared_1x:");
-    Serial.print(data.infrared_normalized, 1);
+    Serial.print(data.infrared_1x, 1);
     Serial.print(",UVA_1x:");
-    Serial.print(data.uva_normalized, 1);
+    Serial.print(data.uva_1x, 1);
     Serial.print(",Saturated:");
     Serial.println(saturated);
   }

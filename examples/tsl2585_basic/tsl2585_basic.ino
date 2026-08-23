@@ -56,11 +56,11 @@ void loop() {
       saturated = true;
     }
 
-    Serial.print(data.photopic_normalized, 1);
+    Serial.print(data.photopic_1x, 1);
     Serial.print('\t');
-    Serial.print(data.infrared_normalized, 1);
+    Serial.print(data.infrared_1x, 1);
     Serial.print('\t');
-    Serial.print(data.uva_normalized, 1);
+    Serial.print(data.uva_1x, 1);
     Serial.print('\t');
     if (saturated) {
       Serial.println("yes");
