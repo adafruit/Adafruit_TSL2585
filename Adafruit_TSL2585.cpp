@@ -66,23 +66,23 @@ bool Adafruit_TSL2585::enable(bool enabled) {
   }
 
   Adafruit_BusIO_Register enable_reg(i2c_dev, TSL2585_REG_ENABLE);
+  Adafruit_BusIO_RegisterBits power_on_bit(&enable_reg, 1,
+                                           TSL2585_ENABLE_PON_BIT);
+  Adafruit_BusIO_RegisterBits als_enable_bit(&enable_reg, 1,
+                                             TSL2585_ENABLE_AEN_BIT);
   if (!enabled) {
-    if (!enable_reg.write(0)) {
+    if (!als_enable_bit.write(0)) {
       return false;
     }
-    return true;
+    return power_on_bit.write(0);
   }
 
-  if (!enable_reg.write(TSL2585_ENABLE_PON)) {
+  if (!power_on_bit.write(1)) {
     return false;
   }
 
   delay(1);
-  if (!enable_reg.write(TSL2585_ENABLE_PON | TSL2585_ENABLE_AEN)) {
-    return false;
-  }
-
-  return true;
+  return als_enable_bit.write(1);
 }
 
 /*!

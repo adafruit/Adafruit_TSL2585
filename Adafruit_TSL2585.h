@@ -57,8 +57,8 @@
 #define TSL2585_REG_STEP0_SMUX_H 0xDD   ///< Step 0 photodiode map high byte
 #define TSL2585_REG_VSYNC_GPIO_INT 0xF8 ///< INT and GPIO direction/value
 
-#define TSL2585_ENABLE_PON 0x01 ///< Oscillator and power enable bit
-#define TSL2585_ENABLE_AEN 0x02 ///< Ambient light measurement enable bit
+#define TSL2585_ENABLE_PON_BIT 0 ///< Oscillator and power enable bit position
+#define TSL2585_ENABLE_AEN_BIT 1 ///< Ambient light enable bit position
 
 #define TSL2585_STATUS2_DATA_VALID 0x40 ///< New coherent ALS result available
 #define TSL2585_STATUS2_DIGITAL_SATURATION 0x10 ///< ALS result overflowed
