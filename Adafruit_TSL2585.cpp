@@ -99,25 +99,21 @@ bool Adafruit_TSL2585::setIntegrationTime(float milliseconds) {
 
   uint16_t sample_count = (uint16_t)(milliseconds * 4.0F + 0.5F);
   uint16_t register_value = sample_count - 1;
-  bool was_enabled = _enabled;
 
-  if (was_enabled && !enable(false)) {
+  if (!enable(false)) {
     return false;
   }
   Adafruit_BusIO_Register als_samples_reg(i2c_dev, TSL2585_REG_ALS_NR_SAMPLES0,
                                           2, LSBFIRST);
-  if (!als_samples_reg.write(register_value)) {
-    if (was_enabled) {
-      enable(true);
-    }
-    return false;
+  bool success = als_samples_reg.write(register_value);
+  if (success) {
+    _als_samples = register_value;
   }
 
-  _als_samples = register_value;
-  if (was_enabled) {
-    return enable(true);
+  if (!enable(true)) {
+    return false;
   }
-  return true;
+  return success;
 }
 
 /*!
