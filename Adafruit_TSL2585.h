@@ -46,6 +46,7 @@
 #define TSL2585_REG_CFG4 0xA5           ///< Sequencer and AGC configuration
 #define TSL2585_REG_CFG5 0xA6           ///< ALS interrupt channel/persistence
 #define TSL2585_REG_CFG8 0xA9           ///< Maximum sequencer modulator gain
+#define TSL2585_REG_CONTROL 0xB1        ///< Reset and status-clear controls
 #define TSL2585_REG_INTENAB 0xBA        ///< External interrupt enables
 #define TSL2585_REG_MEAS_SEQR_FD_0 0xCF ///< Modulator 0/1 flicker patterns
 #define TSL2585_REG_MEAS_SEQR_ALS_FD_1 0xD0   ///< ALS and modulator 2 patterns
@@ -64,6 +65,10 @@
 
 #define TSL2585_ENABLE_PON_BIT 0 ///< Oscillator and power enable bit position
 #define TSL2585_ENABLE_AEN_BIT 1 ///< Ambient light enable bit position
+
+#define TSL2585_CONTROL_SOFT_RESET_BIT 3 ///< Software-reset bit position
+#define TSL2585_STARTUP_DELAY_MS 1       ///< Oscillator startup delay
+#define TSL2585_RESET_DELAY_MS 1         ///< Reset initialization delay
 
 #define TSL2585_STATUS2_DATA_VALID_BIT 6        ///< ALS data-valid bit position
 #define TSL2585_STATUS2_DIGITAL_SATURATION 0x10 ///< ALS result overflowed
@@ -205,6 +210,7 @@ class Adafruit_TSL2585 {
   ~Adafruit_TSL2585();
 
   bool begin(uint8_t i2c_addr = TSL2585_DEFAULT_ADDR, TwoWire* wire = &Wire);
+  bool reset();
   bool enable(bool enabled);
 
   bool setIntegrationTime(float milliseconds);

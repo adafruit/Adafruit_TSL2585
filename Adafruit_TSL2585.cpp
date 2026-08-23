@@ -50,10 +50,50 @@ bool Adafruit_TSL2585::begin(uint8_t i2c_addr, TwoWire* wire) {
     return false;
   }
 
+  if (!reset()) {
+    return false;
+  }
+
   // UV_CALIB supplies the factory correction used for calibrated UVA results.
   _uv_calibration = getUVCalibration();
 
   return configure();
+}
+
+/*!
+ * @brief Reset the sensor registers to their power-on values.
+ *
+ * Datasheet Figure 54 requires ENABLE.PON to be set before writing
+ * CONTROL.SOFT_RESET. The reset then initializes the device in the same way as
+ * a hardware reset.
+ *
+ * @return True when the reset command was written successfully.
+ */
+bool Adafruit_TSL2585::reset() {
+  if (i2c_dev == nullptr) {
+    return false;
+  }
+
+  // ENABLE.PON starts the oscillator required to execute a software reset.
+  Adafruit_BusIO_Register enable_reg(i2c_dev, TSL2585_REG_ENABLE);
+  Adafruit_BusIO_RegisterBits power_on_bit(&enable_reg, 1,
+                                           TSL2585_ENABLE_PON_BIT);
+  if (!power_on_bit.write(1)) {
+    return false;
+  }
+  delay(TSL2585_STARTUP_DELAY_MS);
+
+  // CONTROL.SOFT_RESET restores the device's power-on register values.
+  Adafruit_BusIO_Register control_reg(i2c_dev, TSL2585_REG_CONTROL);
+  Adafruit_BusIO_RegisterBits soft_reset_bit(&control_reg, 1,
+                                             TSL2585_CONTROL_SOFT_RESET_BIT);
+  if (!soft_reset_bit.write(1)) {
+    return false;
+  }
+
+  // The device temporarily rejects I2C transactions while it initializes.
+  delay(TSL2585_RESET_DELAY_MS);
+  return true;
 }
 
 /*!
@@ -89,7 +129,7 @@ bool Adafruit_TSL2585::enable(bool enabled) {
   }
 
   // No PON-to-AEN delay is specified; allow a conservative startup margin.
-  delay(1);
+  delay(TSL2585_STARTUP_DELAY_MS);
   return als_enable_bit.write(1);
 }
 

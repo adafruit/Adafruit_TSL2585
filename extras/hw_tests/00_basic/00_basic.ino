@@ -21,6 +21,20 @@ void setup() {
   }
   Serial.println("Begin succeeded");
 
+  if (!tsl2585.reset()) {
+    haltWithFailure(F("Software reset failed"));
+  }
+  Serial.println("Software reset succeeded");
+  if (tsl2585.getDeviceID() != TSL2585_DEVICE_ID) {
+    haltWithFailure(F("Sensor did not respond after software reset"));
+  }
+  Serial.println("Sensor responded after software reset");
+
+  if (!tsl2585.begin()) {
+    haltWithFailure(F("Second begin failed after software reset"));
+  }
+  Serial.println("Second begin succeeded after software reset");
+
   if (!tsl2585.enableAGC(false)) {
     haltWithFailure(F("Disabling AGC for the manual gain checks failed"));
   }
