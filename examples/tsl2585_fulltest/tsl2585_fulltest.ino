@@ -153,16 +153,16 @@ void loop() {
 
   tsl2585_data_t data;
   if (tsl2585.readData(&data)) {
-    Serial.print(F("Photopic: "));
-    Serial.print(data.photopic);
+    Serial.print(F("Photopic 128x: "));
+    Serial.print(data.photopic_normalized, 1);
     Serial.print(F(" ("));
     printGain(data.photopic_gain);
-    Serial.print(F(")   Infrared: "));
-    Serial.print(data.infrared);
+    Serial.print(F(")   Infrared 128x: "));
+    Serial.print(data.infrared_normalized, 1);
     Serial.print(F(" ("));
     printGain(data.infrared_gain);
-    Serial.print(F(")   UVA calibrated: "));
-    Serial.print(data.uva_calibrated, 1);
+    Serial.print(F(")   UVA 128x: "));
+    Serial.print(data.uva_normalized, 1);
     Serial.print(F(" ("));
     printGain(data.uva_gain);
     Serial.print(F(")   Saturated: "));

@@ -122,11 +122,11 @@
 #define TSL2585_MEAS_MODE0_FULL_COUNTS 0x00     ///< 16-bit counts, no residuals
 #define TSL2585_MEAS_MODE1_MSB_POSITION_12 0x0C ///< Default 20-bit MSB
 #define TSL2585_SEQUENCER_DISABLED 0x00         ///< Disable a sequencer feature
-#define TSL2585_SEQUENCER_STEP0 0x01 ///< Enable sequencer step 0 only
+#define TSL2585_SEQUENCER_STEP0 0x01         ///< Enable sequencer step 0 only
 #define TSL2585_CALIBRATION_EVERY_ROUND 0x01 ///< Run calibration every round
 
 #define TSL2585_SAMPLE_TIME_250_US 179 ///< 250 us sample time register value
-#define TSL2585_DEFAULT_ALS_SAMPLE_COUNT 200       ///< 200 samples, or 50 ms
+#define TSL2585_DEFAULT_ALS_SAMPLE_COUNT 200 ///< 200 samples, or 50 ms
 #define TSL2585_MAX_SAMPLE_TIME 2047 ///< Largest 11-bit sample-time value
 #define TSL2585_MAX_INTEGRATION_SAMPLES 2048 ///< Largest ALS sample count
 #define TSL2585_SMUX_HIGH_MAX 0x0F ///< Largest valid step-0 SMUX high value
@@ -193,6 +193,9 @@ typedef struct {
   uint16_t infrared;    ///< Raw full-count infrared result
   uint16_t uva;         ///< Raw full-count UVA result
   float uva_calibrated; ///< UVA counts corrected with the part's OTP factor
+  float photopic_normalized;    ///< Typical photopic counts normalized to 128x
+  float infrared_normalized;    ///< Typical infrared counts normalized to 128x
+  float uva_normalized;         ///< OTP-corrected UVA counts normalized to 128x
   tsl2585_gain_t photopic_gain; ///< Gain used for the photopic result
   tsl2585_gain_t infrared_gain; ///< Gain used for the infrared result
   tsl2585_gain_t uva_gain;      ///< Gain used for the UVA result
@@ -256,6 +259,7 @@ class Adafruit_TSL2585 {
   uint8_t _uv_calibration = 127;
 
   bool configure();
+  float normalizeTo128x(float counts, tsl2585_gain_t gain);
 };
 
 #endif

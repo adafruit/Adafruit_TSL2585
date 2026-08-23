@@ -267,24 +267,20 @@ bool Adafruit_TSL2585::enableAGC(bool enabled) {
       &cfg4_reg, 1, TSL2585_CFG4_CALIBRATION_STEP_ENABLE_BIT);
 
   // STEP1_SMUX_H selects the sequencer steps that use saturation AGC.
-  Adafruit_BusIO_Register saturation_agc_reg(i2c_dev,
-                                              TSL2585_REG_STEP1_SMUX_H);
+  Adafruit_BusIO_Register saturation_agc_reg(i2c_dev, TSL2585_REG_STEP1_SMUX_H);
   Adafruit_BusIO_RegisterBits saturation_agc_pattern(
-      &saturation_agc_reg, TSL2585_AGC_PATTERN_BITS,
-      TSL2585_AGC_PATTERN_SHIFT);
+      &saturation_agc_reg, TSL2585_AGC_PATTERN_BITS, TSL2585_AGC_PATTERN_SHIFT);
 
   // STEP2_SMUX_H selects the sequencer steps that use predictive AGC.
-  Adafruit_BusIO_Register predictive_agc_reg(i2c_dev,
-                                              TSL2585_REG_STEP2_SMUX_H);
+  Adafruit_BusIO_Register predictive_agc_reg(i2c_dev, TSL2585_REG_STEP2_SMUX_H);
   Adafruit_BusIO_RegisterBits predictive_agc_pattern(
-      &predictive_agc_reg, TSL2585_AGC_PATTERN_BITS,
-      TSL2585_AGC_PATTERN_SHIFT);
+      &predictive_agc_reg, TSL2585_AGC_PATTERN_BITS, TSL2585_AGC_PATTERN_SHIFT);
 
   // MOD_CALIB_CFG2 links the selected AGC methods to the calibration schedule.
-  Adafruit_BusIO_Register calibration_features_reg(
-      i2c_dev, TSL2585_REG_MOD_CALIB_CFG2);
-  Adafruit_BusIO_RegisterBits agc_enable_bit(
-      &calibration_features_reg, 1, TSL2585_MOD_CALIB_AGC_ENABLE_BIT);
+  Adafruit_BusIO_Register calibration_features_reg(i2c_dev,
+                                                   TSL2585_REG_MOD_CALIB_CFG2);
+  Adafruit_BusIO_RegisterBits agc_enable_bit(&calibration_features_reg, 1,
+                                             TSL2585_MOD_CALIB_AGC_ENABLE_BIT);
 
   bool success;
   if (enabled) {
@@ -324,7 +320,8 @@ bool Adafruit_TSL2585::dataReady() {
  *
  * STATUS2 is read before ALS_STATUS as required by the device. The complete
  * ALS_STATUS through ALS_STATUS3 block is then read in one transaction so the
- * channel values, saturation flags, and actual gains belong to one cycle.
+ * channel values, saturation flags, and actual gains belong to one cycle. The
+ * actual gains are then used to calculate typical 128x-equivalent counts.
  *
  * @param data Destination for the result.
  * @return True when the register data was read successfully.
@@ -359,6 +356,12 @@ bool Adafruit_TSL2585::readData(tsl2585_data_t* data) {
   data->infrared_gain = (tsl2585_gain_t)result.registers.photopic_ir_gain.upper;
   data->uva_gain = (tsl2585_gain_t)result.registers.uva_gain.lower;
 
+  data->photopic_normalized =
+      normalizeTo128x(data->photopic, data->photopic_gain);
+  data->infrared_normalized =
+      normalizeTo128x(data->infrared, data->infrared_gain);
+  data->uva_normalized = normalizeTo128x(data->uva_calibrated, data->uva_gain);
+
   bool digital_saturation = (status2 & TSL2585_STATUS2_DIGITAL_SATURATION) != 0;
   data->photopic_saturated =
       digital_saturation ||
@@ -383,6 +386,71 @@ float Adafruit_TSL2585::calibrateUVA(uint16_t raw_uva) {
     return raw_uva;
   }
   return raw_uva / correction;
+}
+
+/*!
+ * @brief Normalize counts to the typical response at 128x gain.
+ *
+ * The TSL2585 datasheet Figure 6 characterizes each gain relative to 128x.
+ * The high gain stages are not exact powers of two, so use the typical ratios
+ * from that table instead of the nominal gain labels. The result remains in
+ * counts at the configured integration time; it is not lux or irradiance.
+ *
+ * @param counts Raw or factory-corrected counts at the reported gain.
+ * @param gain Gain reported with the coherent measurement.
+ * @return Typical 128x-equivalent counts.
+ */
+float Adafruit_TSL2585::normalizeTo128x(float counts, tsl2585_gain_t gain) {
+  float ratio_to_128x = 1.0F;
+
+  switch (gain) {
+    case TSL2585_GAIN_0_5X:
+      ratio_to_128x = 1.0F / 249.13F;
+      break;
+    case TSL2585_GAIN_1X:
+      ratio_to_128x = 1.0F / 123.85F;
+      break;
+    case TSL2585_GAIN_2X:
+      ratio_to_128x = 1.0F / 62.97F;
+      break;
+    case TSL2585_GAIN_4X:
+      ratio_to_128x = 1.0F / 31.72F;
+      break;
+    case TSL2585_GAIN_8X:
+      ratio_to_128x = 1.0F / 15.53F;
+      break;
+    case TSL2585_GAIN_16X:
+      ratio_to_128x = 1.0F / 7.97F;
+      break;
+    case TSL2585_GAIN_32X:
+      ratio_to_128x = 1.0F / 3.99F;
+      break;
+    case TSL2585_GAIN_64X:
+      ratio_to_128x = 1.0F / 2.01F;
+      break;
+    case TSL2585_GAIN_128X:
+      ratio_to_128x = 1.0F;
+      break;
+    case TSL2585_GAIN_256X:
+      ratio_to_128x = 1.93F;
+      break;
+    case TSL2585_GAIN_512X:
+      ratio_to_128x = 3.80F;
+      break;
+    case TSL2585_GAIN_1024X:
+      ratio_to_128x = 7.42F;
+      break;
+    case TSL2585_GAIN_2048X:
+      ratio_to_128x = 14.06F;
+      break;
+    case TSL2585_GAIN_4096X:
+      ratio_to_128x = 25.35F;
+      break;
+    default:
+      break;
+  }
+
+  return counts / ratio_to_128x;
 }
 
 /*!
