@@ -3,8 +3,12 @@
 #define UVA_LED_PIN 4
 
 const uint8_t SAMPLES_PER_LEVEL = 6;
+const uint16_t DATA_READY_TIMEOUT_MS = 1000;
 const float GAIN_TEST_INTEGRATION_MS = 10;
 const float MAXIMUM_INTEGRATION_GAIN_COUNT = 3500;
+
+const float GAIN_TEST_INTEGRATION_TIMES[] = {10, 5, 2.5, 1.25, 0.5,
+                                             0.25};
 
 const tsl2585_gain_t TEST_GAINS[] = {
     TSL2585_GAIN_0_5X,  TSL2585_GAIN_1X,    TSL2585_GAIN_2X,
@@ -57,6 +61,9 @@ void setup() {
   Serial.println(
       F("Keep the sensor and room lighting steady during this test."));
   Serial.println(F("Aim the D4 365 nm LED at the sensor for a UVA signal."));
+  Serial.println(F("The 4096x preflight must not saturate."));
+  Serial.println(
+      F("If asked, reduce room light or move the D4 LED and restart."));
 
   pinMode(UVA_LED_PIN, OUTPUT);
   digitalWrite(UVA_LED_PIN, LOW);
@@ -89,14 +96,9 @@ void loop() {}
 
 bool testGain(tsl2585_channel_t channel, tsl2585_gain_t *integration_gain) {
   Serial.println();
-  Serial.print(F("Sweeping all gains for the "));
+  Serial.print(F("Checking maximum gain for the "));
   printChannel(channel);
   Serial.println(F(" channel"));
-
-  if (!tsl2585.setIntegrationTime(GAIN_TEST_INTEGRATION_MS)) {
-    Serial.println(F("Could not set the integration time."));
-    return false;
-  }
 
   tsl2585_gain_t expected_gains[3] = {
       TSL2585_GAIN_0_5X, TSL2585_GAIN_0_5X, TSL2585_GAIN_0_5X};
@@ -108,9 +110,74 @@ bool testGain(tsl2585_channel_t channel, tsl2585_gain_t *integration_gain) {
     }
   }
 
+  expected_gains[channel] = TSL2585_GAIN_4096X;
+  if (!tsl2585.setGain(channel, TSL2585_GAIN_4096X) ||
+      tsl2585.getGain(channel) != TSL2585_GAIN_4096X) {
+    Serial.println(F("Could not set 4096x for the preflight."));
+    return false;
+  }
+
+  float gain_sweep_integration_ms = GAIN_TEST_INTEGRATION_MS;
+  bool maximum_gain_ready = false;
+  for (uint8_t time_index = 0;
+       time_index < sizeof(GAIN_TEST_INTEGRATION_TIMES) /
+                        sizeof(GAIN_TEST_INTEGRATION_TIMES[0]);
+       time_index++) {
+    if (!tsl2585.setIntegrationTime(
+            GAIN_TEST_INTEGRATION_TIMES[time_index])) {
+      Serial.println(F("Could not set the integration time."));
+      return false;
+    }
+    gain_sweep_integration_ms = tsl2585.getIntegrationTime();
+
+    float averages[3];
+    bool saturated[3];
+    if (!readAverages(expected_gains, averages, saturated)) {
+      return false;
+    }
+
+    Serial.print(F("  4096x at "));
+    Serial.print(gain_sweep_integration_ms, 2);
+    Serial.print(F(" ms: "));
+    Serial.print(averages[channel], 1);
+    Serial.print(F(" counts"));
+    if (saturated[channel]) {
+      Serial.print(F(" (saturated)"));
+    }
+    Serial.println();
+
+    if (!saturated[channel]) {
+      maximum_gain_ready = true;
+      break;
+    }
+  }
+
+  if (!maximum_gain_ready) {
+    Serial.println(F("4096x is still saturated at minimum integration."));
+    Serial.println(
+        F("Reduce room light or move the D4 LED farther away and restart."));
+    return false;
+  }
+
+  expected_gains[channel] = TSL2585_GAIN_0_5X;
+  if (!tsl2585.setGain(channel, TSL2585_GAIN_0_5X) ||
+      tsl2585.getGain(channel) != TSL2585_GAIN_0_5X) {
+    Serial.println(F("Could not reset the gain after the preflight."));
+    return false;
+  }
+
+  Serial.print(F("Sweeping all gains for the "));
+  printChannel(channel);
+  Serial.print(F(" channel at "));
+  Serial.print(gain_sweep_integration_ms, 2);
+  Serial.println(F(" ms, starting from 0.5x"));
+
   trend_t trend = {false, 0, 0, 0, 0, 0};
   *integration_gain = TSL2585_GAIN_0_5X;
   bool integration_gain_selected = false;
+  float maximum_integration_gain_count =
+      MAXIMUM_INTEGRATION_GAIN_COUNT * gain_sweep_integration_ms /
+      GAIN_TEST_INTEGRATION_MS;
 
   for (uint8_t gain_index = 0;
        gain_index < sizeof(TEST_GAINS) / sizeof(TEST_GAINS[0]); gain_index++) {
@@ -149,7 +216,7 @@ bool testGain(tsl2585_channel_t channel, tsl2585_gain_t *integration_gain) {
             F("Counts decreased beyond the allowed noise margin."));
         return false;
       }
-      if (averages[channel] <= MAXIMUM_INTEGRATION_GAIN_COUNT) {
+      if (averages[channel] <= maximum_integration_gain_count) {
         *integration_gain = gain;
         integration_gain_selected = true;
       }
@@ -255,9 +322,12 @@ bool testIntegrationTime(const tsl2585_gain_t *gains) {
 }
 
 bool readFreshData(tsl2585_data_t *data) {
-  delay((uint32_t)tsl2585.getIntegrationTime() + 10);
-  if (!tsl2585.dataReady()) {
-    return false;
+  uint32_t start_ms = millis();
+  while (!tsl2585.dataReady()) {
+    if (millis() - start_ms >= DATA_READY_TIMEOUT_MS) {
+      return false;
+    }
+    delay(1);
   }
   return tsl2585.readData(data);
 }
