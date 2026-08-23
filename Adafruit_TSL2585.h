@@ -90,8 +90,7 @@
 #define TSL2585_GPIO_OUTPUT_BIT 1       ///< GPIO open-drain value bit position
 #define TSL2585_GPIO_INPUT_BIT 0        ///< GPIO input value bit position
 
-#define TSL2585_GAIN_MASK 0x0F ///< Mask for one four-bit gain status field
-#define TSL2585_GAIN_BITS 4    ///< Width of one gain configuration field
+#define TSL2585_GAIN_BITS 4           ///< Width of one gain configuration field
 #define TSL2585_PHOTOPIC_GAIN_SHIFT 0 ///< Photopic gain field position
 #define TSL2585_IR_GAIN_SHIFT 4       ///< IR gain field position
 #define TSL2585_UVA_GAIN_SHIFT 0      ///< UVA gain field position

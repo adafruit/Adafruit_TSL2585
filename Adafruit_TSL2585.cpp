@@ -215,12 +215,9 @@ tsl2585_gain_t Adafruit_TSL2585::getGain(tsl2585_channel_t channel) {
     shift = TSL2585_IR_GAIN_SHIFT;
   }
 
-  uint8_t register_value;
   Adafruit_BusIO_Register gain_reg(i2c_dev, register_address);
-  if (!gain_reg.read(&register_value)) {
-    return TSL2585_GAIN_0_5X;
-  }
-  return (tsl2585_gain_t)((register_value >> shift) & TSL2585_GAIN_MASK);
+  Adafruit_BusIO_RegisterBits gain_bits(&gain_reg, TSL2585_GAIN_BITS, shift);
+  return (tsl2585_gain_t)gain_bits.read();
 }
 
 /*!
