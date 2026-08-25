@@ -11,7 +11,7 @@ void setup() {
   }
   delay(250);
 
-  Serial.println("Adafruit TSL2585 Serial Plotter example");
+  Serial.println("Adafruit TSL2585 Serial Plotter");
 
   if (!tsl2585.begin()) {
     Serial.println("Could not find a TSL2585. Check the wiring and I2C address.");
@@ -37,12 +37,6 @@ void loop() {
 
   tsl2585_data_t data;
   if (tsl2585.readData(&data)) {
-    uint8_t saturated = 0;
-    if (data.photopic_saturated || data.infrared_saturated ||
-        data.uva_saturated) {
-      saturated = 1;
-    }
-
     // Keep the same numeric label:value fields on every line so the Arduino
     // Serial Plotter can graph each series.
     Serial.print("Photopic:");
@@ -50,9 +44,7 @@ void loop() {
     Serial.print(",\tInfrared:");
     Serial.print(data.infrared_1x, 1);
     Serial.print(",\tUVA:");
-    Serial.print(data.uva_1x, 1);
-    Serial.print(",\tSaturated:");
-    Serial.println(saturated);
+    Serial.println(data.uva_1x, 1);
   }
 
   delay(100);
