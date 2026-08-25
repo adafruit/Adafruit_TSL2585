@@ -165,15 +165,33 @@ bool Adafruit_TSL2585::enable(bool enabled) {
 
 /*!
  * @brief Set ALS integration time for the register-result path.
- * @param milliseconds Integration time from 0.25 ms through 90 ms.
- * @return True when the value was in range and written successfully.
+ * The time is rounded to the nearest whole sample using the sample period
+ * currently stored in SAMPLE_TIME. See TSL2585 datasheet Figures 23 through
+ * 26.
+ *
+ * @param milliseconds Integration time from 0.25 ms through 90 ms that rounds
+ * to 1 through 2048 samples at the current sample period.
+ * @return True when the sample-time register was read and the resulting sample
+ * count was in range and written successfully.
  */
 bool Adafruit_TSL2585::setIntegrationTime(float milliseconds) {
   if (i2c_dev == nullptr || milliseconds < 0.25F || milliseconds > 90.0F) {
     return false;
   }
 
-  uint16_t sample_count = (uint16_t)(milliseconds * 4.0F + 0.5F);
+  uint16_t sample_time_register_value;
+  if (!getSampleTime(&sample_time_register_value)) {
+    return false;
+  }
+
+  float sample_period_ms = (sample_time_register_value + 1) *
+                           TSL2585_MODULATOR_CLOCK_PERIOD_US / 1000.0F;
+  float requested_sample_count = milliseconds / sample_period_ms;
+  if (requested_sample_count < 0.5F ||
+      requested_sample_count >= TSL2585_MAX_INTEGRATION_SAMPLES + 0.5F) {
+    return false;
+  }
+  uint16_t sample_count = (uint16_t)(requested_sample_count + 0.5F);
 
   // Figures 25 and 26 do not define a live update for this two-byte field.
   // Stop ALS so the next conversion uses one complete integration setting.
@@ -197,13 +215,16 @@ float Adafruit_TSL2585::getIntegrationTime() {
     return 0;
   }
 
-  uint16_t als_sample_count_register_value;
-  Adafruit_BusIO_Register als_samples_reg(i2c_dev, TSL2585_REG_ALS_NR_SAMPLES0,
-                                          2, LSBFIRST);
-  if (!als_samples_reg.read(&als_sample_count_register_value)) {
+  uint16_t sample_time_register_value;
+  uint16_t sample_count;
+  if (!getSampleTime(&sample_time_register_value) ||
+      !getIntegrationSamples(&sample_count)) {
     return 0;
   }
-  return (als_sample_count_register_value + 1) * 0.25F;
+
+  float sample_period_ms = (sample_time_register_value + 1) *
+                           TSL2585_MODULATOR_CLOCK_PERIOD_US / 1000.0F;
+  return sample_count * sample_period_ms;
 }
 
 /*!
@@ -757,6 +778,30 @@ bool Adafruit_TSL2585::setSampleTime(uint16_t sample_time_register_value) {
 }
 
 /*!
+ * @brief Read the raw 11-bit modulator sample-time value.
+ *
+ * SAMPLE_TIME spans SAMPLE_TIME0 and SAMPLE_TIME1. With the default CFG7 clock
+ * divider, the sample period is the returned value plus one, multiplied by
+ * 1.388889 us. See TSL2585 datasheet Figures 23 and 24.
+ *
+ * @param sample_time_register_value Destination for the value from 0 through
+ * 2047.
+ * @return True when the register read succeeded and contained a valid value.
+ */
+bool Adafruit_TSL2585::getSampleTime(uint16_t* sample_time_register_value) {
+  if (i2c_dev == nullptr || sample_time_register_value == nullptr) {
+    return false;
+  }
+
+  Adafruit_BusIO_Register sample_time_reg(i2c_dev, TSL2585_REG_SAMPLE_TIME0, 2,
+                                          LSBFIRST);
+  if (!sample_time_reg.read(sample_time_register_value)) {
+    return false;
+  }
+  return *sample_time_register_value <= TSL2585_MAX_SAMPLE_TIME;
+}
+
+/*!
  * @brief Set the ALS integration length as an actual sample count.
  *
  * ALS_NR_SAMPLES stores one less than the requested count across registers
@@ -777,6 +822,32 @@ bool Adafruit_TSL2585::setIntegrationSamples(uint16_t sample_count) {
   Adafruit_BusIO_Register als_samples_reg(i2c_dev, TSL2585_REG_ALS_NR_SAMPLES0,
                                           2, LSBFIRST);
   return als_samples_reg.write(sample_count - 1);
+}
+
+/*!
+ * @brief Read the ALS integration length as an actual sample count.
+ *
+ * ALS_NR_SAMPLES spans ALS_NR_SAMPLES0 and ALS_NR_SAMPLES1 and stores one less
+ * than the sample count. See TSL2585 datasheet Figures 25 and 26.
+ *
+ * @param sample_count Destination for the sample count from 1 through 2048.
+ * @return True when the register read succeeded and contained a valid value.
+ */
+bool Adafruit_TSL2585::getIntegrationSamples(uint16_t* sample_count) {
+  if (i2c_dev == nullptr || sample_count == nullptr) {
+    return false;
+  }
+
+  uint16_t sample_count_register_value;
+  Adafruit_BusIO_Register als_samples_reg(i2c_dev, TSL2585_REG_ALS_NR_SAMPLES0,
+                                          2, LSBFIRST);
+  if (!als_samples_reg.read(&sample_count_register_value) ||
+      sample_count_register_value >= TSL2585_MAX_INTEGRATION_SAMPLES) {
+    return false;
+  }
+
+  *sample_count = sample_count_register_value + 1;
+  return true;
 }
 
 /*!

@@ -275,6 +275,16 @@ void configureAdvancedSettings() {
       !tsl2585.setIntegrationSamples(TSL2585_DEFAULT_ALS_SAMPLE_COUNT)) {
     haltWithMessage(F("Could not set the raw sample timing."));
   }
+  uint16_t sampleTimeRegisterValue;
+  uint16_t integrationSamples;
+  if (!tsl2585.getSampleTime(&sampleTimeRegisterValue) ||
+      !tsl2585.getIntegrationSamples(&integrationSamples)) {
+    haltWithMessage(F("Could not read the raw sample timing."));
+  }
+  Serial.print(F("Sample-time register value: "));
+  Serial.print(sampleTimeRegisterValue);
+  Serial.print(F("   Integration samples: "));
+  Serial.println(integrationSamples);
 
   // Each nibble is a four-step pattern. These values enable ALS and interrupt
   // persistence on step 0 without flicker, residual, VSYNC, or wait steps.
