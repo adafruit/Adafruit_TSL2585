@@ -258,7 +258,7 @@ class Adafruit_TSL2585 {
   uint8_t getDeviceID();
   uint8_t getRevisionID();
   uint8_t getAuxiliaryID();
-  uint8_t getUVCalibration();
+  bool getUVCalibration(uint8_t* calibration);
 
  private:
   Adafruit_TSL2585(const Adafruit_TSL2585&) = delete;

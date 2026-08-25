@@ -55,7 +55,9 @@ bool Adafruit_TSL2585::begin(uint8_t i2c_addr, TwoWire* wire) {
   }
 
   // UV_CALIB supplies the factory correction used for calibrated UVA results.
-  _uv_calibration = getUVCalibration();
+  if (!getUVCalibration(&_uv_calibration)) {
+    return false;
+  }
 
   // ENABLE register Figure 20 says to set PON only after configuration.
   if (!enable(false)) {
@@ -687,10 +689,19 @@ uint8_t Adafruit_TSL2585::getAuxiliaryID() {
   return auxiliary_id_reg.read();
 }
 
-/*! @return The factory UVA calibration byte, where 127 is nominal. */
-uint8_t Adafruit_TSL2585::getUVCalibration() {
+/*!
+ * @brief Read the factory UVA calibration byte.
+ * @param calibration Destination for the calibration byte, where 127 is
+ * nominal.
+ * @return True when the register read succeeded.
+ */
+bool Adafruit_TSL2585::getUVCalibration(uint8_t* calibration) {
+  if (i2c_dev == nullptr || calibration == nullptr) {
+    return false;
+  }
+
   Adafruit_BusIO_Register uv_calibration_reg(i2c_dev, TSL2585_REG_UV_CALIB);
-  return uv_calibration_reg.read();
+  return uv_calibration_reg.read(calibration);
 }
 
 /*!
