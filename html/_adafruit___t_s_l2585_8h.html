@@ -75,6 +75,15 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsl2585__gain__register__t.html">tsl2585_gain_register_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Packed lower and upper gain fields from a gain-status register.  <a href="structtsl2585__gain__register__t.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsl2585__result__registers__t.html">tsl2585_result_registers_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Packed register layout for one coherent ALS result block.  <a href="structtsl2585__result__registers__t.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uniontsl2585__result__buffer__t.html">tsl2585_result_buffer_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Byte buffer and register view for one coherent ALS result block.  <a href="uniontsl2585__result__buffer__t.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtsl2585__data__t.html">tsl2585_data_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One coherent three-channel TSL2585 measurement.  <a href="structtsl2585__data__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -116,6 +125,14 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a48bb03fb69150466d8600715b2ec0410">TSL2585_REG_ALS_NR_SAMPLES0</a>&#160;&#160;&#160;0x85</td></tr>
 <tr class="memdesc:a48bb03fb69150466d8600715b2ec0410"><td class="mdescLeft">&#160;</td><td class="mdescRight">ALS sample count low byte. <br /></td></tr>
 <tr class="separator:a48bb03fb69150466d8600715b2ec0410"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc3468b86aa730969c8e45c63b8dd11e"><td class="memItemLeft" align="right" valign="top"><a id="abc3468b86aa730969c8e45c63b8dd11e"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#abc3468b86aa730969c8e45c63b8dd11e">TSL2585_REG_ALS_THRESHOLD_LOW</a>&#160;&#160;&#160;0x8A</td></tr>
+<tr class="memdesc:abc3468b86aa730969c8e45c63b8dd11e"><td class="mdescLeft">&#160;</td><td class="mdescRight">ALS low threshold, 24-bit. <br /></td></tr>
+<tr class="separator:abc3468b86aa730969c8e45c63b8dd11e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade271ccb6589c15a0efef0e90c9c39c5"><td class="memItemLeft" align="right" valign="top"><a id="ade271ccb6589c15a0efef0e90c9c39c5"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#ade271ccb6589c15a0efef0e90c9c39c5">TSL2585_REG_ALS_THRESHOLD_HIGH</a>&#160;&#160;&#160;0x8D</td></tr>
+<tr class="memdesc:ade271ccb6589c15a0efef0e90c9c39c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">ALS high threshold, 24-bit. <br /></td></tr>
+<tr class="separator:ade271ccb6589c15a0efef0e90c9c39c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af25706a16eaf90120727e47476aae673"><td class="memItemLeft" align="right" valign="top"><a id="af25706a16eaf90120727e47476aae673"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#af25706a16eaf90120727e47476aae673">TSL2585_REG_AUX_ID</a>&#160;&#160;&#160;0x90</td></tr>
 <tr class="memdesc:af25706a16eaf90120727e47476aae673"><td class="mdescLeft">&#160;</td><td class="mdescRight">Auxiliary identification. <br /></td></tr>
@@ -128,6 +145,10 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#af65de336033cedd5077acd39ca9b5bf2">TSL2585_REG_ID</a>&#160;&#160;&#160;0x92</td></tr>
 <tr class="memdesc:af65de336033cedd5077acd39ca9b5bf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device identification. <br /></td></tr>
 <tr class="separator:af65de336033cedd5077acd39ca9b5bf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dd12b93bbc4739397ead751bfcd18be"><td class="memItemLeft" align="right" valign="top"><a id="a6dd12b93bbc4739397ead751bfcd18be"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a6dd12b93bbc4739397ead751bfcd18be">TSL2585_REG_STATUS</a>&#160;&#160;&#160;0x93</td></tr>
+<tr class="memdesc:a6dd12b93bbc4739397ead751bfcd18be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main interrupt status. <br /></td></tr>
+<tr class="separator:a6dd12b93bbc4739397ead751bfcd18be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47dc3af312a1af91d478df9bc9ccfaca"><td class="memItemLeft" align="right" valign="top"><a id="a47dc3af312a1af91d478df9bc9ccfaca"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a47dc3af312a1af91d478df9bc9ccfaca">TSL2585_REG_ALS_STATUS</a>&#160;&#160;&#160;0x94</td></tr>
 <tr class="memdesc:a47dc3af312a1af91d478df9bc9ccfaca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start of coherent ALS result block. <br /></td></tr>
@@ -140,6 +161,30 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#aeb1f25e82c02e8787fc8ad94e27a19ae">TSL2585_REG_STATUS4</a>&#160;&#160;&#160;0x9F</td></tr>
 <tr class="memdesc:aeb1f25e82c02e8787fc8ad94e27a19ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialization and trigger status. <br /></td></tr>
 <tr class="separator:aeb1f25e82c02e8787fc8ad94e27a19ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac390a60323d54fed7b1fd3114a7e28a7"><td class="memItemLeft" align="right" valign="top"><a id="ac390a60323d54fed7b1fd3114a7e28a7"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#ac390a60323d54fed7b1fd3114a7e28a7">TSL2585_REG_CFG3</a>&#160;&#160;&#160;0xA4</td></tr>
+<tr class="memdesc:ac390a60323d54fed7b1fd3114a7e28a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">INT and GPIO pin mapping. <br /></td></tr>
+<tr class="separator:ac390a60323d54fed7b1fd3114a7e28a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af72878903112aad643a0df5d4d03ae15"><td class="memItemLeft" align="right" valign="top"><a id="af72878903112aad643a0df5d4d03ae15"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#af72878903112aad643a0df5d4d03ae15">TSL2585_REG_CFG4</a>&#160;&#160;&#160;0xA5</td></tr>
+<tr class="memdesc:af72878903112aad643a0df5d4d03ae15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sequencer and AGC configuration. <br /></td></tr>
+<tr class="separator:af72878903112aad643a0df5d4d03ae15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab074f6a54d619d6a1d887827282c9f20"><td class="memItemLeft" align="right" valign="top"><a id="ab074f6a54d619d6a1d887827282c9f20"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#ab074f6a54d619d6a1d887827282c9f20">TSL2585_REG_CFG5</a>&#160;&#160;&#160;0xA6</td></tr>
+<tr class="memdesc:ab074f6a54d619d6a1d887827282c9f20"><td class="mdescLeft">&#160;</td><td class="mdescRight">ALS interrupt channel/persistence. <br /></td></tr>
+<tr class="separator:ab074f6a54d619d6a1d887827282c9f20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6465a294fb08ced7fb2c2d80196da85"><td class="memItemLeft" align="right" valign="top"><a id="ae6465a294fb08ced7fb2c2d80196da85"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#ae6465a294fb08ced7fb2c2d80196da85">TSL2585_REG_CFG8</a>&#160;&#160;&#160;0xA9</td></tr>
+<tr class="memdesc:ae6465a294fb08ced7fb2c2d80196da85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum sequencer modulator gain. <br /></td></tr>
+<tr class="separator:ae6465a294fb08ced7fb2c2d80196da85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc9b8aee01d9881cd2c785510b97e571"><td class="memItemLeft" align="right" valign="top"><a id="acc9b8aee01d9881cd2c785510b97e571"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#acc9b8aee01d9881cd2c785510b97e571">TSL2585_REG_CONTROL</a>&#160;&#160;&#160;0xB1</td></tr>
+<tr class="memdesc:acc9b8aee01d9881cd2c785510b97e571"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset and status-clear controls. <br /></td></tr>
+<tr class="separator:acc9b8aee01d9881cd2c785510b97e571"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5433ff126d691e9fcea8a84de224c642"><td class="memItemLeft" align="right" valign="top"><a id="a5433ff126d691e9fcea8a84de224c642"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a5433ff126d691e9fcea8a84de224c642">TSL2585_REG_INTENAB</a>&#160;&#160;&#160;0xBA</td></tr>
+<tr class="memdesc:a5433ff126d691e9fcea8a84de224c642"><td class="mdescLeft">&#160;</td><td class="mdescRight">External interrupt enables. <br /></td></tr>
+<tr class="separator:a5433ff126d691e9fcea8a84de224c642"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1bfd7574ae3a8cafc3151bfd367fb9c0"><td class="memItemLeft" align="right" valign="top"><a id="a1bfd7574ae3a8cafc3151bfd367fb9c0"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a1bfd7574ae3a8cafc3151bfd367fb9c0">TSL2585_REG_MEAS_SEQR_FD_0</a>&#160;&#160;&#160;0xCF</td></tr>
 <tr class="memdesc:a1bfd7574ae3a8cafc3151bfd367fb9c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Modulator 0/1 flicker patterns. <br /></td></tr>
@@ -176,26 +221,178 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#ac347bd7fb2ad86bacbef6a80dd9bb93f">TSL2585_REG_STEP0_SMUX_H</a>&#160;&#160;&#160;0xDD</td></tr>
 <tr class="memdesc:ac347bd7fb2ad86bacbef6a80dd9bb93f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Step 0 photodiode map high byte. <br /></td></tr>
 <tr class="separator:ac347bd7fb2ad86bacbef6a80dd9bb93f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec48dc3043561f3d4ca37b1828c10a4c"><td class="memItemLeft" align="right" valign="top"><a id="aec48dc3043561f3d4ca37b1828c10a4c"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#aec48dc3043561f3d4ca37b1828c10a4c">TSL2585_ENABLE_PON</a>&#160;&#160;&#160;0x01</td></tr>
-<tr class="memdesc:aec48dc3043561f3d4ca37b1828c10a4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Oscillator and power enable bit. <br /></td></tr>
-<tr class="separator:aec48dc3043561f3d4ca37b1828c10a4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a84e267e7d7be66bc4252bcfc526027c3"><td class="memItemLeft" align="right" valign="top"><a id="a84e267e7d7be66bc4252bcfc526027c3"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a84e267e7d7be66bc4252bcfc526027c3">TSL2585_ENABLE_AEN</a>&#160;&#160;&#160;0x02</td></tr>
-<tr class="memdesc:a84e267e7d7be66bc4252bcfc526027c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ambient light measurement enable bit. <br /></td></tr>
-<tr class="separator:a84e267e7d7be66bc4252bcfc526027c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65a8205c35d5de431b83a25a1f7db05d"><td class="memItemLeft" align="right" valign="top"><a id="a65a8205c35d5de431b83a25a1f7db05d"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a65a8205c35d5de431b83a25a1f7db05d">TSL2585_STATUS2_DATA_VALID</a>&#160;&#160;&#160;0x40</td></tr>
-<tr class="memdesc:a65a8205c35d5de431b83a25a1f7db05d"><td class="mdescLeft">&#160;</td><td class="mdescRight">New coherent ALS result available. <br /></td></tr>
-<tr class="separator:a65a8205c35d5de431b83a25a1f7db05d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0c25c8aba5287fec6860f5b677ce743"><td class="memItemLeft" align="right" valign="top"><a id="aa0c25c8aba5287fec6860f5b677ce743"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#aa0c25c8aba5287fec6860f5b677ce743">TSL2585_REG_STEP1_SMUX_H</a>&#160;&#160;&#160;0xDF</td></tr>
+<tr class="memdesc:aa0c25c8aba5287fec6860f5b677ce743"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saturation AGC step pattern. <br /></td></tr>
+<tr class="separator:aa0c25c8aba5287fec6860f5b677ce743"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f0dd41c8b6425c365f0a161577c2bd2"><td class="memItemLeft" align="right" valign="top"><a id="a4f0dd41c8b6425c365f0a161577c2bd2"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a4f0dd41c8b6425c365f0a161577c2bd2">TSL2585_REG_STEP2_SMUX_H</a>&#160;&#160;&#160;0xE1</td></tr>
+<tr class="memdesc:a4f0dd41c8b6425c365f0a161577c2bd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Predictive AGC step pattern. <br /></td></tr>
+<tr class="separator:a4f0dd41c8b6425c365f0a161577c2bd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91ad6218237ca843c5e38b9a27653e21"><td class="memItemLeft" align="right" valign="top"><a id="a91ad6218237ca843c5e38b9a27653e21"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a91ad6218237ca843c5e38b9a27653e21">TSL2585_REG_MOD_CALIB_CFG0</a>&#160;&#160;&#160;0xE4</td></tr>
+<tr class="memdesc:a91ad6218237ca843c5e38b9a27653e21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calibration repetition rate. <br /></td></tr>
+<tr class="separator:a91ad6218237ca843c5e38b9a27653e21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a176c9e2919394e3c3f1791873216c951"><td class="memItemLeft" align="right" valign="top"><a id="a176c9e2919394e3c3f1791873216c951"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a176c9e2919394e3c3f1791873216c951">TSL2585_REG_MOD_CALIB_CFG2</a>&#160;&#160;&#160;0xE6</td></tr>
+<tr class="memdesc:a176c9e2919394e3c3f1791873216c951"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calibration feature enables. <br /></td></tr>
+<tr class="separator:a176c9e2919394e3c3f1791873216c951"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a597587507419238de72f25a3aa41b059"><td class="memItemLeft" align="right" valign="top"><a id="a597587507419238de72f25a3aa41b059"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a597587507419238de72f25a3aa41b059">TSL2585_REG_VSYNC_GPIO_INT</a>&#160;&#160;&#160;0xF8</td></tr>
+<tr class="memdesc:a597587507419238de72f25a3aa41b059"><td class="mdescLeft">&#160;</td><td class="mdescRight">INT and GPIO direction/value. <br /></td></tr>
+<tr class="separator:a597587507419238de72f25a3aa41b059"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7504d5de53940b6eeecd010ff1e3678"><td class="memItemLeft" align="right" valign="top"><a id="ae7504d5de53940b6eeecd010ff1e3678"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#ae7504d5de53940b6eeecd010ff1e3678">TSL2585_ENABLE_PON_BIT</a>&#160;&#160;&#160;0</td></tr>
+<tr class="memdesc:ae7504d5de53940b6eeecd010ff1e3678"><td class="mdescLeft">&#160;</td><td class="mdescRight">Oscillator and power enable bit position. <br /></td></tr>
+<tr class="separator:ae7504d5de53940b6eeecd010ff1e3678"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a460a07393a09d7478fdb634276f62b8a"><td class="memItemLeft" align="right" valign="top"><a id="a460a07393a09d7478fdb634276f62b8a"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a460a07393a09d7478fdb634276f62b8a">TSL2585_ENABLE_AEN_BIT</a>&#160;&#160;&#160;1</td></tr>
+<tr class="memdesc:a460a07393a09d7478fdb634276f62b8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ambient light enable bit position. <br /></td></tr>
+<tr class="separator:a460a07393a09d7478fdb634276f62b8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae71c8dcdc45c022482ea1e1047fcec26"><td class="memItemLeft" align="right" valign="top"><a id="ae71c8dcdc45c022482ea1e1047fcec26"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#ae71c8dcdc45c022482ea1e1047fcec26">TSL2585_CONTROL_SOFT_RESET_BIT</a>&#160;&#160;&#160;3</td></tr>
+<tr class="memdesc:ae71c8dcdc45c022482ea1e1047fcec26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Software-reset bit position. <br /></td></tr>
+<tr class="separator:ae71c8dcdc45c022482ea1e1047fcec26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f752020908eaf91ddfd5fea41e0468a"><td class="memItemLeft" align="right" valign="top"><a id="a5f752020908eaf91ddfd5fea41e0468a"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a5f752020908eaf91ddfd5fea41e0468a">TSL2585_STARTUP_DELAY_MS</a>&#160;&#160;&#160;1</td></tr>
+<tr class="memdesc:a5f752020908eaf91ddfd5fea41e0468a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Oscillator startup delay. <br /></td></tr>
+<tr class="separator:a5f752020908eaf91ddfd5fea41e0468a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a712835daae415bcad8352a65acb4293f"><td class="memItemLeft" align="right" valign="top"><a id="a712835daae415bcad8352a65acb4293f"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a712835daae415bcad8352a65acb4293f">TSL2585_RESET_DELAY_MS</a>&#160;&#160;&#160;1</td></tr>
+<tr class="memdesc:a712835daae415bcad8352a65acb4293f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset initialization delay. <br /></td></tr>
+<tr class="separator:a712835daae415bcad8352a65acb4293f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada19dd9d04c7a5feb6aca118f6fab4ae"><td class="memItemLeft" align="right" valign="top"><a id="ada19dd9d04c7a5feb6aca118f6fab4ae"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#ada19dd9d04c7a5feb6aca118f6fab4ae">TSL2585_STATUS2_DATA_VALID_BIT</a>&#160;&#160;&#160;6</td></tr>
+<tr class="memdesc:ada19dd9d04c7a5feb6aca118f6fab4ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">ALS data-valid bit position. <br /></td></tr>
+<tr class="separator:ada19dd9d04c7a5feb6aca118f6fab4ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee5135a20e66d24837c7d226e2afa1ab"><td class="memItemLeft" align="right" valign="top"><a id="aee5135a20e66d24837c7d226e2afa1ab"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#aee5135a20e66d24837c7d226e2afa1ab">TSL2585_STATUS2_DIGITAL_SATURATION</a>&#160;&#160;&#160;0x10</td></tr>
 <tr class="memdesc:aee5135a20e66d24837c7d226e2afa1ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">ALS result overflowed. <br /></td></tr>
 <tr class="separator:aee5135a20e66d24837c7d226e2afa1ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab8f65ee7f3473431ac773b9f0c5e9e2"><td class="memItemLeft" align="right" valign="top"><a id="aab8f65ee7f3473431ac773b9f0c5e9e2"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#aab8f65ee7f3473431ac773b9f0c5e9e2">TSL2585_GAIN_MASK</a>&#160;&#160;&#160;0x0F</td></tr>
-<tr class="memdesc:aab8f65ee7f3473431ac773b9f0c5e9e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mask for one four-bit gain status field. <br /></td></tr>
-<tr class="separator:aab8f65ee7f3473431ac773b9f0c5e9e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75220ef42dfd277f79ee134aff957007"><td class="memItemLeft" align="right" valign="top"><a id="a75220ef42dfd277f79ee134aff957007"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a75220ef42dfd277f79ee134aff957007">TSL2585_STATUS_AINT</a>&#160;&#160;&#160;0x08</td></tr>
+<tr class="memdesc:a75220ef42dfd277f79ee134aff957007"><td class="mdescLeft">&#160;</td><td class="mdescRight">ALS threshold interrupt asserted. <br /></td></tr>
+<tr class="separator:a75220ef42dfd277f79ee134aff957007"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5760096b4a0a3e5bff3776684f0f4f26"><td class="memItemLeft" align="right" valign="top"><a id="a5760096b4a0a3e5bff3776684f0f4f26"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a5760096b4a0a3e5bff3776684f0f4f26">TSL2585_STATUS_AINT_BIT</a>&#160;&#160;&#160;3</td></tr>
+<tr class="memdesc:a5760096b4a0a3e5bff3776684f0f4f26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position of ALS interrupt status. <br /></td></tr>
+<tr class="separator:a5760096b4a0a3e5bff3776684f0f4f26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f09ee2c64e6be7165d29cd7a5637a32"><td class="memItemLeft" align="right" valign="top"><a id="a9f09ee2c64e6be7165d29cd7a5637a32"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a9f09ee2c64e6be7165d29cd7a5637a32">TSL2585_INTENAB_AIEN_BIT</a>&#160;&#160;&#160;3</td></tr>
+<tr class="memdesc:a9f09ee2c64e6be7165d29cd7a5637a32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position of ALS interrupt enable. <br /></td></tr>
+<tr class="separator:a9f09ee2c64e6be7165d29cd7a5637a32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8124fc2f71167a56ff0367207e48d94b"><td class="memItemLeft" align="right" valign="top"><a id="a8124fc2f71167a56ff0367207e48d94b"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a8124fc2f71167a56ff0367207e48d94b">TSL2585_CFG3_GPIO_PINMAP_BITS</a>&#160;&#160;&#160;2</td></tr>
+<tr class="memdesc:a8124fc2f71167a56ff0367207e48d94b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Width of GPIO pin-map field. <br /></td></tr>
+<tr class="separator:a8124fc2f71167a56ff0367207e48d94b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9aa2dc50c41ff235e777a018a8a4e9e4"><td class="memItemLeft" align="right" valign="top"><a id="a9aa2dc50c41ff235e777a018a8a4e9e4"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a9aa2dc50c41ff235e777a018a8a4e9e4">TSL2585_CFG3_GPIO_PINMAP_SHIFT</a>&#160;&#160;&#160;0</td></tr>
+<tr class="memdesc:a9aa2dc50c41ff235e777a018a8a4e9e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position of GPIO pin-map field. <br /></td></tr>
+<tr class="separator:a9aa2dc50c41ff235e777a018a8a4e9e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cd57cb919949f1b6e437785eb5be498"><td class="memItemLeft" align="right" valign="top"><a id="a5cd57cb919949f1b6e437785eb5be498"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a5cd57cb919949f1b6e437785eb5be498">TSL2585_CFG3_GPIO_PINMAP_OUTPUT</a>&#160;&#160;&#160;0</td></tr>
+<tr class="memdesc:a5cd57cb919949f1b6e437785eb5be498"><td class="mdescLeft">&#160;</td><td class="mdescRight">Route GPIO output register to pin. <br /></td></tr>
+<tr class="separator:a5cd57cb919949f1b6e437785eb5be498"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a737a905f3d1baf439168e95af94e242f"><td class="memItemLeft" align="right" valign="top"><a id="a737a905f3d1baf439168e95af94e242f"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a737a905f3d1baf439168e95af94e242f">TSL2585_CFG3_INT_PINMAP_BITS</a>&#160;&#160;&#160;2</td></tr>
+<tr class="memdesc:a737a905f3d1baf439168e95af94e242f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Width of INT pin-map field. <br /></td></tr>
+<tr class="separator:a737a905f3d1baf439168e95af94e242f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf4290ac88cf304224512780ed6dd380"><td class="memItemLeft" align="right" valign="top"><a id="adf4290ac88cf304224512780ed6dd380"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#adf4290ac88cf304224512780ed6dd380">TSL2585_CFG3_INT_PINMAP_SHIFT</a>&#160;&#160;&#160;4</td></tr>
+<tr class="memdesc:adf4290ac88cf304224512780ed6dd380"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position of INT pin-map field. <br /></td></tr>
+<tr class="separator:adf4290ac88cf304224512780ed6dd380"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29e84419b5a0aee9986afe6b10db9ce9"><td class="memItemLeft" align="right" valign="top"><a id="a29e84419b5a0aee9986afe6b10db9ce9"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a29e84419b5a0aee9986afe6b10db9ce9">TSL2585_CFG3_INT_PINMAP_INTERRUPT</a>&#160;&#160;&#160;0</td></tr>
+<tr class="memdesc:a29e84419b5a0aee9986afe6b10db9ce9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Route interrupt signal to INT. <br /></td></tr>
+<tr class="separator:a29e84419b5a0aee9986afe6b10db9ce9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b36d64e4004f8375134f5da1319721a"><td class="memItemLeft" align="right" valign="top"><a id="a9b36d64e4004f8375134f5da1319721a"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a9b36d64e4004f8375134f5da1319721a">TSL2585_CFG4_CALIBRATION_PER_STEP_BIT</a>&#160;&#160;&#160;6</td></tr>
+<tr class="memdesc:a9b36d64e4004f8375134f5da1319721a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Schedule by sequencer step. <br /></td></tr>
+<tr class="separator:a9b36d64e4004f8375134f5da1319721a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e4fa7a29a3b0a97899f9590a2574e2d"><td class="memItemLeft" align="right" valign="top"><a id="a5e4fa7a29a3b0a97899f9590a2574e2d"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a5e4fa7a29a3b0a97899f9590a2574e2d">TSL2585_CFG5_THRESHOLD_CHANNEL_BITS</a>&#160;&#160;&#160;2</td></tr>
+<tr class="memdesc:a5e4fa7a29a3b0a97899f9590a2574e2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Width of channel field. <br /></td></tr>
+<tr class="separator:a5e4fa7a29a3b0a97899f9590a2574e2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d93a4dd266afbd1529c3fd3cbd323a3"><td class="memItemLeft" align="right" valign="top"><a id="a7d93a4dd266afbd1529c3fd3cbd323a3"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a7d93a4dd266afbd1529c3fd3cbd323a3">TSL2585_CFG5_THRESHOLD_CHANNEL_SHIFT</a>&#160;&#160;&#160;4</td></tr>
+<tr class="memdesc:a7d93a4dd266afbd1529c3fd3cbd323a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position of channel field. <br /></td></tr>
+<tr class="separator:a7d93a4dd266afbd1529c3fd3cbd323a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad92167f132db823323e719d48d31960a"><td class="memItemLeft" align="right" valign="top"><a id="ad92167f132db823323e719d48d31960a"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#ad92167f132db823323e719d48d31960a">TSL2585_CFG5_PERSISTENCE_BITS</a>&#160;&#160;&#160;4</td></tr>
+<tr class="memdesc:ad92167f132db823323e719d48d31960a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Width of persistence field. <br /></td></tr>
+<tr class="separator:ad92167f132db823323e719d48d31960a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55ae6e15974f92c22f39ca7d1041446c"><td class="memItemLeft" align="right" valign="top"><a id="a55ae6e15974f92c22f39ca7d1041446c"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a55ae6e15974f92c22f39ca7d1041446c">TSL2585_CFG5_PERSISTENCE_SHIFT</a>&#160;&#160;&#160;0</td></tr>
+<tr class="memdesc:a55ae6e15974f92c22f39ca7d1041446c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position of persistence field. <br /></td></tr>
+<tr class="separator:a55ae6e15974f92c22f39ca7d1041446c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28ad24bd685f630c34168f77dba16629"><td class="memItemLeft" align="right" valign="top"><a id="a28ad24bd685f630c34168f77dba16629"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a28ad24bd685f630c34168f77dba16629">TSL2585_MAX_INTERRUPT_PERSISTENCE</a>&#160;&#160;&#160;0x0F</td></tr>
+<tr class="memdesc:a28ad24bd685f630c34168f77dba16629"><td class="mdescLeft">&#160;</td><td class="mdescRight">Largest persistence code. <br /></td></tr>
+<tr class="separator:a28ad24bd685f630c34168f77dba16629"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7a15d61940966e05419bd8262a2c5b4"><td class="memItemLeft" align="right" valign="top"><a id="ac7a15d61940966e05419bd8262a2c5b4"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#ac7a15d61940966e05419bd8262a2c5b4">TSL2585_CFG8_MAX_GAIN_BITS</a>&#160;&#160;&#160;4</td></tr>
+<tr class="memdesc:ac7a15d61940966e05419bd8262a2c5b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Width of maximum gain field. <br /></td></tr>
+<tr class="separator:ac7a15d61940966e05419bd8262a2c5b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ca80b92f8399d4b43ff0ab697b48b4a"><td class="memItemLeft" align="right" valign="top"><a id="a1ca80b92f8399d4b43ff0ab697b48b4a"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a1ca80b92f8399d4b43ff0ab697b48b4a">TSL2585_CFG8_MAX_GAIN_SHIFT</a>&#160;&#160;&#160;4</td></tr>
+<tr class="memdesc:a1ca80b92f8399d4b43ff0ab697b48b4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position of maximum gain field. <br /></td></tr>
+<tr class="separator:a1ca80b92f8399d4b43ff0ab697b48b4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae2c73c47264bf7c29da040fa8cd1145"><td class="memItemLeft" align="right" valign="top"><a id="aae2c73c47264bf7c29da040fa8cd1145"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#aae2c73c47264bf7c29da040fa8cd1145">TSL2585_AGC_PATTERN_BITS</a>&#160;&#160;&#160;4</td></tr>
+<tr class="memdesc:aae2c73c47264bf7c29da040fa8cd1145"><td class="mdescLeft">&#160;</td><td class="mdescRight">Width of each AGC sequencer pattern. <br /></td></tr>
+<tr class="separator:aae2c73c47264bf7c29da040fa8cd1145"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b4ffd13621731438dbd8bab19d0db71"><td class="memItemLeft" align="right" valign="top"><a id="a7b4ffd13621731438dbd8bab19d0db71"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a7b4ffd13621731438dbd8bab19d0db71">TSL2585_AGC_PATTERN_SHIFT</a>&#160;&#160;&#160;4</td></tr>
+<tr class="memdesc:a7b4ffd13621731438dbd8bab19d0db71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position of each AGC pattern. <br /></td></tr>
+<tr class="separator:a7b4ffd13621731438dbd8bab19d0db71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a497ae0d4108efacea8d1d3624ab4787d"><td class="memItemLeft" align="right" valign="top"><a id="a497ae0d4108efacea8d1d3624ab4787d"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a497ae0d4108efacea8d1d3624ab4787d">TSL2585_AGC_STEP0_PATTERN</a>&#160;&#160;&#160;0x01</td></tr>
+<tr class="memdesc:a497ae0d4108efacea8d1d3624ab4787d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable AGC for sequencer step 0. <br /></td></tr>
+<tr class="separator:a497ae0d4108efacea8d1d3624ab4787d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d14890d29af39d8b93863dc9dd38d8e"><td class="memItemLeft" align="right" valign="top"><a id="a3d14890d29af39d8b93863dc9dd38d8e"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a3d14890d29af39d8b93863dc9dd38d8e">TSL2585_MOD_CALIB_AGC_ENABLE_BIT</a>&#160;&#160;&#160;5</td></tr>
+<tr class="memdesc:a3d14890d29af39d8b93863dc9dd38d8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Link AGC to calibration cycle. <br /></td></tr>
+<tr class="separator:a3d14890d29af39d8b93863dc9dd38d8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66a7b7c55733fc7697dd9b4965ea5c7b"><td class="memItemLeft" align="right" valign="top"><a id="a66a7b7c55733fc7697dd9b4965ea5c7b"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a66a7b7c55733fc7697dd9b4965ea5c7b">TSL2585_INT_INPUT_ENABLE_BIT</a>&#160;&#160;&#160;5</td></tr>
+<tr class="memdesc:a66a7b7c55733fc7697dd9b4965ea5c7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">INT direction bit position. <br /></td></tr>
+<tr class="separator:a66a7b7c55733fc7697dd9b4965ea5c7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c8f650ac6bd8c838d426257c3b0ad2f"><td class="memItemLeft" align="right" valign="top"><a id="a9c8f650ac6bd8c838d426257c3b0ad2f"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a9c8f650ac6bd8c838d426257c3b0ad2f">TSL2585_INT_INVERT_BIT</a>&#160;&#160;&#160;6</td></tr>
+<tr class="memdesc:a9c8f650ac6bd8c838d426257c3b0ad2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">INT polarity bit position. <br /></td></tr>
+<tr class="separator:a9c8f650ac6bd8c838d426257c3b0ad2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8622e05957020fc7485b6442200c7eb"><td class="memItemLeft" align="right" valign="top"><a id="ac8622e05957020fc7485b6442200c7eb"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#ac8622e05957020fc7485b6442200c7eb">TSL2585_GPIO_INVERT_BIT</a>&#160;&#160;&#160;3</td></tr>
+<tr class="memdesc:ac8622e05957020fc7485b6442200c7eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPIO polarity bit position. <br /></td></tr>
+<tr class="separator:ac8622e05957020fc7485b6442200c7eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9948af053894f657a2230d0fd734f2a2"><td class="memItemLeft" align="right" valign="top"><a id="a9948af053894f657a2230d0fd734f2a2"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a9948af053894f657a2230d0fd734f2a2">TSL2585_GPIO_INPUT_ENABLE_BIT</a>&#160;&#160;&#160;2</td></tr>
+<tr class="memdesc:a9948af053894f657a2230d0fd734f2a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPIO direction bit position. <br /></td></tr>
+<tr class="separator:a9948af053894f657a2230d0fd734f2a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8110dcb4150d7e0d2a5daff19b10538a"><td class="memItemLeft" align="right" valign="top"><a id="a8110dcb4150d7e0d2a5daff19b10538a"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a8110dcb4150d7e0d2a5daff19b10538a">TSL2585_GPIO_OUTPUT_BIT</a>&#160;&#160;&#160;1</td></tr>
+<tr class="memdesc:a8110dcb4150d7e0d2a5daff19b10538a"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPIO open-drain value bit position. <br /></td></tr>
+<tr class="separator:a8110dcb4150d7e0d2a5daff19b10538a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9180e701961c9daf806ea6e1e481654e"><td class="memItemLeft" align="right" valign="top"><a id="a9180e701961c9daf806ea6e1e481654e"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a9180e701961c9daf806ea6e1e481654e">TSL2585_GPIO_INPUT_BIT</a>&#160;&#160;&#160;0</td></tr>
+<tr class="memdesc:a9180e701961c9daf806ea6e1e481654e"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPIO input value bit position. <br /></td></tr>
+<tr class="separator:a9180e701961c9daf806ea6e1e481654e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf96a349dd3f613388bd5d1f0f4b45fa"><td class="memItemLeft" align="right" valign="top"><a id="acf96a349dd3f613388bd5d1f0f4b45fa"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#acf96a349dd3f613388bd5d1f0f4b45fa">TSL2585_GAIN_BITS</a>&#160;&#160;&#160;4</td></tr>
+<tr class="memdesc:acf96a349dd3f613388bd5d1f0f4b45fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Width of one gain configuration field. <br /></td></tr>
+<tr class="separator:acf96a349dd3f613388bd5d1f0f4b45fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bde7a7d755321f2810c7094470a831c"><td class="memItemLeft" align="right" valign="top"><a id="a7bde7a7d755321f2810c7094470a831c"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a7bde7a7d755321f2810c7094470a831c">TSL2585_PHOTOPIC_GAIN_SHIFT</a>&#160;&#160;&#160;0</td></tr>
+<tr class="memdesc:a7bde7a7d755321f2810c7094470a831c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Photopic gain field position. <br /></td></tr>
+<tr class="separator:a7bde7a7d755321f2810c7094470a831c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbcec868ba7d2b90124e35db8bd27d2e"><td class="memItemLeft" align="right" valign="top"><a id="adbcec868ba7d2b90124e35db8bd27d2e"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#adbcec868ba7d2b90124e35db8bd27d2e">TSL2585_IR_GAIN_SHIFT</a>&#160;&#160;&#160;4</td></tr>
+<tr class="memdesc:adbcec868ba7d2b90124e35db8bd27d2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">IR gain field position. <br /></td></tr>
+<tr class="separator:adbcec868ba7d2b90124e35db8bd27d2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4899798c8dfd686eecfca4617e308630"><td class="memItemLeft" align="right" valign="top"><a id="a4899798c8dfd686eecfca4617e308630"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a4899798c8dfd686eecfca4617e308630">TSL2585_UVA_GAIN_SHIFT</a>&#160;&#160;&#160;0</td></tr>
+<tr class="memdesc:a4899798c8dfd686eecfca4617e308630"><td class="mdescLeft">&#160;</td><td class="mdescRight">UVA gain field position. <br /></td></tr>
+<tr class="separator:a4899798c8dfd686eecfca4617e308630"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a388b6063bcc2189ebbcbf65526be7d0c"><td class="memItemLeft" align="right" valign="top"><a id="a388b6063bcc2189ebbcbf65526be7d0c"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a388b6063bcc2189ebbcbf65526be7d0c">TSL2585_ALS_STATUS_PHOTOPIC_SATURATION</a>&#160;&#160;&#160;0x20</td></tr>
 <tr class="memdesc:a388b6063bcc2189ebbcbf65526be7d0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Modulator 0 saturated. <br /></td></tr>
@@ -232,26 +429,38 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#aea48c77c80b2538b0ca527b6b54189c2">TSL2585_SEQUENCER_STEP0</a>&#160;&#160;&#160;0x01</td></tr>
 <tr class="memdesc:aea48c77c80b2538b0ca527b6b54189c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable sequencer step 0 only. <br /></td></tr>
 <tr class="separator:aea48c77c80b2538b0ca527b6b54189c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2ed35a7250936d6aa9f0d8495eae94a"><td class="memItemLeft" align="right" valign="top"><a id="ac2ed35a7250936d6aa9f0d8495eae94a"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#ac2ed35a7250936d6aa9f0d8495eae94a">TSL2585_DEFAULT_GAIN_L</a>&#160;&#160;&#160;0x88</td></tr>
-<tr class="memdesc:ac2ed35a7250936d6aa9f0d8495eae94a"><td class="mdescLeft">&#160;</td><td class="mdescRight">128x gain on modulators 0 and 1 <br /></td></tr>
-<tr class="separator:ac2ed35a7250936d6aa9f0d8495eae94a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa11efa065fea471c6562d51f2d8d5ef3"><td class="memItemLeft" align="right" valign="top"><a id="aa11efa065fea471c6562d51f2d8d5ef3"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#aa11efa065fea471c6562d51f2d8d5ef3">TSL2585_DEFAULT_GAIN_H</a>&#160;&#160;&#160;0x08</td></tr>
-<tr class="memdesc:aa11efa065fea471c6562d51f2d8d5ef3"><td class="mdescLeft">&#160;</td><td class="mdescRight">128x gain on modulator 2 <br /></td></tr>
-<tr class="separator:aa11efa065fea471c6562d51f2d8d5ef3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac947a0197d11a6e49019af214e411f62"><td class="memItemLeft" align="right" valign="top"><a id="ac947a0197d11a6e49019af214e411f62"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#ac947a0197d11a6e49019af214e411f62">TSL2585_CALIBRATION_EVERY_ROUND</a>&#160;&#160;&#160;0x01</td></tr>
+<tr class="memdesc:ac947a0197d11a6e49019af214e411f62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run calibration every round. <br /></td></tr>
+<tr class="separator:ac947a0197d11a6e49019af214e411f62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03916632705db3b5847a2f942d6c227c"><td class="memItemLeft" align="right" valign="top"><a id="a03916632705db3b5847a2f942d6c227c"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a03916632705db3b5847a2f942d6c227c">TSL2585_SAMPLE_TIME_250_US</a>&#160;&#160;&#160;179</td></tr>
 <tr class="memdesc:a03916632705db3b5847a2f942d6c227c"><td class="mdescLeft">&#160;</td><td class="mdescRight">250 us sample time register value <br /></td></tr>
 <tr class="separator:a03916632705db3b5847a2f942d6c227c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab114fe410ce54760cb29872cf560a273"><td class="memItemLeft" align="right" valign="top"><a id="ab114fe410ce54760cb29872cf560a273"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#ab114fe410ce54760cb29872cf560a273">TSL2585_DEFAULT_ALS_SAMPLES</a>&#160;&#160;&#160;199</td></tr>
-<tr class="memdesc:ab114fe410ce54760cb29872cf560a273"><td class="mdescLeft">&#160;</td><td class="mdescRight">200 samples, or 50 ms <br /></td></tr>
-<tr class="separator:ab114fe410ce54760cb29872cf560a273"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2cc94728e1556232f8bb7c2329c68638"><td class="memItemLeft" align="right" valign="top"><a id="a2cc94728e1556232f8bb7c2329c68638"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a2cc94728e1556232f8bb7c2329c68638">TSL2585_ALS_RESULT_BLOCK_SIZE</a>&#160;&#160;&#160;9</td></tr>
-<tr class="memdesc:a2cc94728e1556232f8bb7c2329c68638"><td class="mdescLeft">&#160;</td><td class="mdescRight">ALS status/data block byte count. <br /></td></tr>
-<tr class="separator:a2cc94728e1556232f8bb7c2329c68638"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6699dc0c6955feaf218d7d3153653e3"><td class="memItemLeft" align="right" valign="top"><a id="ae6699dc0c6955feaf218d7d3153653e3"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#ae6699dc0c6955feaf218d7d3153653e3">TSL2585_MODULATOR_CLOCK_PERIOD_US</a>&#160;&#160;&#160;1.388889F</td></tr>
+<tr class="memdesc:ae6699dc0c6955feaf218d7d3153653e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">One clock period in us. <br /></td></tr>
+<tr class="separator:ae6699dc0c6955feaf218d7d3153653e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acce28141e54073ef4983ec4e27772f38"><td class="memItemLeft" align="right" valign="top"><a id="acce28141e54073ef4983ec4e27772f38"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#acce28141e54073ef4983ec4e27772f38">TSL2585_DEFAULT_ALS_SAMPLE_COUNT</a>&#160;&#160;&#160;200</td></tr>
+<tr class="memdesc:acce28141e54073ef4983ec4e27772f38"><td class="mdescLeft">&#160;</td><td class="mdescRight">200 samples, or 50 ms <br /></td></tr>
+<tr class="separator:acce28141e54073ef4983ec4e27772f38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af24de4ac76598f4371ba0cc138c36745"><td class="memItemLeft" align="right" valign="top"><a id="af24de4ac76598f4371ba0cc138c36745"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#af24de4ac76598f4371ba0cc138c36745">TSL2585_MAX_SAMPLE_TIME</a>&#160;&#160;&#160;2047</td></tr>
+<tr class="memdesc:af24de4ac76598f4371ba0cc138c36745"><td class="mdescLeft">&#160;</td><td class="mdescRight">Largest 11-bit sample-time value. <br /></td></tr>
+<tr class="separator:af24de4ac76598f4371ba0cc138c36745"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a112eabd343d4d9cab62cb6164257eb8a"><td class="memItemLeft" align="right" valign="top"><a id="a112eabd343d4d9cab62cb6164257eb8a"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a112eabd343d4d9cab62cb6164257eb8a">TSL2585_MAX_INTEGRATION_SAMPLES</a>&#160;&#160;&#160;2048</td></tr>
+<tr class="memdesc:a112eabd343d4d9cab62cb6164257eb8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Largest ALS sample count. <br /></td></tr>
+<tr class="separator:a112eabd343d4d9cab62cb6164257eb8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed271abaad60235ea8bfc822435331b7"><td class="memItemLeft" align="right" valign="top"><a id="aed271abaad60235ea8bfc822435331b7"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#aed271abaad60235ea8bfc822435331b7">TSL2585_SMUX_HIGH_MAX</a>&#160;&#160;&#160;0x0F</td></tr>
+<tr class="memdesc:aed271abaad60235ea8bfc822435331b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Largest valid step-0 SMUX high value. <br /></td></tr>
+<tr class="separator:aed271abaad60235ea8bfc822435331b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84e1875bc269d44b9f289e39ee964ada"><td class="memItemLeft" align="right" valign="top"><a id="a84e1875bc269d44b9f289e39ee964ada"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___t_s_l2585_8h.html#a84e1875bc269d44b9f289e39ee964ada">TSL2585_MAX_INTERRUPT_THRESHOLD</a>&#160;&#160;&#160;0xFFFFFFUL</td></tr>
+<tr class="memdesc:a84e1875bc269d44b9f289e39ee964ada"><td class="mdescLeft">&#160;</td><td class="mdescRight">Largest ALS threshold. <br /></td></tr>
+<tr class="separator:a84e1875bc269d44b9f289e39ee964ada"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>

@@ -84,36 +84,87 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:adde96d16563e6cdd7dcbb288eeb886c0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#adde96d16563e6cdd7dcbb288eeb886c0">begin</a> (uint8_t i2c_addr=<a class="el" href="_adafruit___t_s_l2585_8h.html#abfcb1206bae748f084b922f7fd466759">TSL2585_DEFAULT_ADDR</a>, TwoWire *wire=&amp;Wire)</td></tr>
 <tr class="memdesc:adde96d16563e6cdd7dcbb288eeb886c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the I2C connection and configure three-channel ALS.  <a href="#adde96d16563e6cdd7dcbb288eeb886c0">More...</a><br /></td></tr>
 <tr class="separator:adde96d16563e6cdd7dcbb288eeb886c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c4c14210473ca192ee094dbb67b694d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#a5c4c14210473ca192ee094dbb67b694d">isConnected</a> ()</td></tr>
-<tr class="memdesc:a5c4c14210473ca192ee094dbb67b694d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether the configured I2C device acknowledges.  <a href="#a5c4c14210473ca192ee094dbb67b694d">More...</a><br /></td></tr>
-<tr class="separator:a5c4c14210473ca192ee094dbb67b694d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a725f76c4332dd55276fc1b0d93f5f9a7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#a725f76c4332dd55276fc1b0d93f5f9a7">enable</a> ()</td></tr>
-<tr class="memdesc:a725f76c4332dd55276fc1b0d93f5f9a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Power the oscillator and start continuous ALS measurements.  <a href="#a725f76c4332dd55276fc1b0d93f5f9a7">More...</a><br /></td></tr>
-<tr class="separator:a725f76c4332dd55276fc1b0d93f5f9a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a998b2861f8e7b35b1e101ac3fbaa1123"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#a998b2861f8e7b35b1e101ac3fbaa1123">disable</a> ()</td></tr>
-<tr class="memdesc:a998b2861f8e7b35b1e101ac3fbaa1123"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop measurements and power down the oscillator.  <a href="#a998b2861f8e7b35b1e101ac3fbaa1123">More...</a><br /></td></tr>
-<tr class="separator:a998b2861f8e7b35b1e101ac3fbaa1123"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ace25770bde1b8d769becfdbbeeb601"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#a5ace25770bde1b8d769becfdbbeeb601">reset</a> ()</td></tr>
+<tr class="memdesc:a5ace25770bde1b8d769becfdbbeeb601"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset the sensor registers to their power-on values.  <a href="#a5ace25770bde1b8d769becfdbbeeb601">More...</a><br /></td></tr>
+<tr class="separator:a5ace25770bde1b8d769becfdbbeeb601"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59e648cbdb734f1d54b48de3d5fbffa8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#a59e648cbdb734f1d54b48de3d5fbffa8">enable</a> (bool enabled)</td></tr>
+<tr class="memdesc:a59e648cbdb734f1d54b48de3d5fbffa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable or disable continuous ALS measurements.  <a href="#a59e648cbdb734f1d54b48de3d5fbffa8">More...</a><br /></td></tr>
+<tr class="separator:a59e648cbdb734f1d54b48de3d5fbffa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc2b86b49a71845f69ad7357cffc75be"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#acc2b86b49a71845f69ad7357cffc75be">setIntegrationTime</a> (float milliseconds)</td></tr>
-<tr class="memdesc:acc2b86b49a71845f69ad7357cffc75be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set ALS integration time for the register-result path.  <a href="#acc2b86b49a71845f69ad7357cffc75be">More...</a><br /></td></tr>
+<tr class="memdesc:acc2b86b49a71845f69ad7357cffc75be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set ALS integration time for the register-result path. The time is rounded to the nearest whole sample using the sample period currently stored in SAMPLE_TIME. See TSL2585 datasheet Figures 23 through 26.  <a href="#acc2b86b49a71845f69ad7357cffc75be">More...</a><br /></td></tr>
 <tr class="separator:acc2b86b49a71845f69ad7357cffc75be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6ca39679c5a42ef18238e289e829a80"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#ae6ca39679c5a42ef18238e289e829a80">getIntegrationTime</a> ()</td></tr>
 <tr class="memdesc:ae6ca39679c5a42ef18238e289e829a80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the configured ALS integration time.  <a href="#ae6ca39679c5a42ef18238e289e829a80">More...</a><br /></td></tr>
 <tr class="separator:ae6ca39679c5a42ef18238e289e829a80"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad4f13dfc3c28f000cc86abdf5fc9d50f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#ad4f13dfc3c28f000cc86abdf5fc9d50f">setGain</a> (<a class="el" href="_adafruit___t_s_l2585_8h.html#a513e42e02ac62da616c85545bbb95bf3">tsl2585_channel_t</a> channel, <a class="el" href="_adafruit___t_s_l2585_8h.html#ac293538a3279ef6b0058299454ecae64">tsl2585_gain_t</a> gain)</td></tr>
-<tr class="memdesc:ad4f13dfc3c28f000cc86abdf5fc9d50f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the manual gain for one optical channel.  <a href="#ad4f13dfc3c28f000cc86abdf5fc9d50f">More...</a><br /></td></tr>
+<tr class="memdesc:ad4f13dfc3c28f000cc86abdf5fc9d50f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the starting gain for one optical channel.  <a href="#ad4f13dfc3c28f000cc86abdf5fc9d50f">More...</a><br /></td></tr>
 <tr class="separator:ad4f13dfc3c28f000cc86abdf5fc9d50f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66aac42709c1807e0ffc422c8e5e14f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_adafruit___t_s_l2585_8h.html#ac293538a3279ef6b0058299454ecae64">tsl2585_gain_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#a66aac42709c1807e0ffc422c8e5e14f7">getGain</a> (<a class="el" href="_adafruit___t_s_l2585_8h.html#a513e42e02ac62da616c85545bbb95bf3">tsl2585_channel_t</a> channel)</td></tr>
 <tr class="memdesc:a66aac42709c1807e0ffc422c8e5e14f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the configured manual gain for one channel.  <a href="#a66aac42709c1807e0ffc422c8e5e14f7">More...</a><br /></td></tr>
 <tr class="separator:a66aac42709c1807e0ffc422c8e5e14f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91bd5abd1be02d02cf7b5f1eec47cf85"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#a91bd5abd1be02d02cf7b5f1eec47cf85">enableAGC</a> (bool enabled)</td></tr>
+<tr class="memdesc:a91bd5abd1be02d02cf7b5f1eec47cf85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable or disable automatic gain control.  <a href="#a91bd5abd1be02d02cf7b5f1eec47cf85">More...</a><br /></td></tr>
+<tr class="separator:a91bd5abd1be02d02cf7b5f1eec47cf85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac229f90cb2a93262eacc12eb63d961fd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#ac229f90cb2a93262eacc12eb63d961fd">setResultFormat</a> (uint8_t mode0, uint8_t mode1)</td></tr>
+<tr class="memdesc:ac229f90cb2a93262eacc12eb63d961fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the raw ALS result format and bit alignment.  <a href="#ac229f90cb2a93262eacc12eb63d961fd">More...</a><br /></td></tr>
+<tr class="separator:ac229f90cb2a93262eacc12eb63d961fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5042e9e435c6fb0ef83e511b363a0487"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#a5042e9e435c6fb0ef83e511b363a0487">setSampleTime</a> (uint16_t sample_time_register_value)</td></tr>
+<tr class="memdesc:a5042e9e435c6fb0ef83e511b363a0487"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the raw 11-bit modulator sample-time value.  <a href="#a5042e9e435c6fb0ef83e511b363a0487">More...</a><br /></td></tr>
+<tr class="separator:a5042e9e435c6fb0ef83e511b363a0487"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48cc7bcb5dbc04bab8313de40bfd11bf"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#a48cc7bcb5dbc04bab8313de40bfd11bf">getSampleTime</a> ()</td></tr>
+<tr class="memdesc:a48cc7bcb5dbc04bab8313de40bfd11bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the raw 11-bit modulator sample-time value.  <a href="#a48cc7bcb5dbc04bab8313de40bfd11bf">More...</a><br /></td></tr>
+<tr class="separator:a48cc7bcb5dbc04bab8313de40bfd11bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1f02fe075cd7a8488f0ee1163a4b908"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#ad1f02fe075cd7a8488f0ee1163a4b908">setIntegrationSamples</a> (uint16_t sample_count)</td></tr>
+<tr class="memdesc:ad1f02fe075cd7a8488f0ee1163a4b908"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the ALS integration length as an actual sample count.  <a href="#ad1f02fe075cd7a8488f0ee1163a4b908">More...</a><br /></td></tr>
+<tr class="separator:ad1f02fe075cd7a8488f0ee1163a4b908"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab86f121a7496a80d211ce351eb58365"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#aab86f121a7496a80d211ce351eb58365">getIntegrationSamples</a> ()</td></tr>
+<tr class="memdesc:aab86f121a7496a80d211ce351eb58365"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the ALS integration length as an actual sample count.  <a href="#aab86f121a7496a80d211ce351eb58365">More...</a><br /></td></tr>
+<tr class="separator:aab86f121a7496a80d211ce351eb58365"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba442cd73a56ccc6e0c52e0d18f98cab"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#aba442cd73a56ccc6e0c52e0d18f98cab">setGainValue</a> (<a class="el" href="_adafruit___t_s_l2585_8h.html#a513e42e02ac62da616c85545bbb95bf3">tsl2585_channel_t</a> channel, <a class="el" href="_adafruit___t_s_l2585_8h.html#ac293538a3279ef6b0058299454ecae64">tsl2585_gain_t</a> gain)</td></tr>
+<tr class="memdesc:aba442cd73a56ccc6e0c52e0d18f98cab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set one channel's gain field without changing the ALS state.  <a href="#aba442cd73a56ccc6e0c52e0d18f98cab">More...</a><br /></td></tr>
+<tr class="separator:aba442cd73a56ccc6e0c52e0d18f98cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e353f2f2290c5ce64f14647e5c4f7ee"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#a4e353f2f2290c5ce64f14647e5c4f7ee">setSequencer</a> (uint8_t fd_mod01_pattern, uint8_t als_fd_mod2_pattern, uint8_t persistence_vsync_pattern, uint8_t residual_mod01_pattern, uint8_t residual_mod2_wait_pattern)</td></tr>
+<tr class="memdesc:a4e353f2f2290c5ce64f14647e5c4f7ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the raw ALS and flicker sequencer patterns.  <a href="#a4e353f2f2290c5ce64f14647e5c4f7ee">More...</a><br /></td></tr>
+<tr class="separator:a4e353f2f2290c5ce64f14647e5c4f7ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac780b770b102e8d7a679af9ee87112d3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#ac780b770b102e8d7a679af9ee87112d3">setMaximumGain</a> (<a class="el" href="_adafruit___t_s_l2585_8h.html#ac293538a3279ef6b0058299454ecae64">tsl2585_gain_t</a> maximum_gain)</td></tr>
+<tr class="memdesc:ac780b770b102e8d7a679af9ee87112d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the maximum gain available to every sequencer channel.  <a href="#ac780b770b102e8d7a679af9ee87112d3">More...</a><br /></td></tr>
+<tr class="separator:ac780b770b102e8d7a679af9ee87112d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e4b1a5e940632e4c64e0abfb9a46d01"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#a3e4b1a5e940632e4c64e0abfb9a46d01">setSMUX</a> (uint8_t smux_low, uint8_t smux_high)</td></tr>
+<tr class="memdesc:a3e4b1a5e940632e4c64e0abfb9a46d01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the raw step-0 photodiode-to-modulator routing.  <a href="#a3e4b1a5e940632e4c64e0abfb9a46d01">More...</a><br /></td></tr>
+<tr class="separator:a3e4b1a5e940632e4c64e0abfb9a46d01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8c1b567cb14f3b02349f7eefd3cdc71"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#ae8c1b567cb14f3b02349f7eefd3cdc71">setCalibrationInterval</a> (uint8_t calibration_interval)</td></tr>
+<tr class="memdesc:ae8c1b567cb14f3b02349f7eefd3cdc71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set how often modulator calibration features run.  <a href="#ae8c1b567cb14f3b02349f7eefd3cdc71">More...</a><br /></td></tr>
+<tr class="separator:ae8c1b567cb14f3b02349f7eefd3cdc71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc22631f0698e6ed4645981cd1d37f43"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#acc22631f0698e6ed4645981cd1d37f43">dataReady</a> ()</td></tr>
 <tr class="memdesc:acc22631f0698e6ed4645981cd1d37f43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether a new ALS measurement is available.  <a href="#acc22631f0698e6ed4645981cd1d37f43">More...</a><br /></td></tr>
 <tr class="separator:acc22631f0698e6ed4645981cd1d37f43"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49028eda9f7dab04b6d4fcfda4e75594"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#a49028eda9f7dab04b6d4fcfda4e75594">readData</a> (<a class="el" href="structtsl2585__data__t.html">tsl2585_data_t</a> *data, uint32_t timeout_ms=1000)</td></tr>
-<tr class="memdesc:a49028eda9f7dab04b6d4fcfda4e75594"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wait for and read one coherent three-channel measurement.  <a href="#a49028eda9f7dab04b6d4fcfda4e75594">More...</a><br /></td></tr>
-<tr class="separator:a49028eda9f7dab04b6d4fcfda4e75594"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83a10ce79eab0d046de845c8892dedfa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#a83a10ce79eab0d046de845c8892dedfa">readData</a> (<a class="el" href="structtsl2585__data__t.html">tsl2585_data_t</a> *data)</td></tr>
+<tr class="memdesc:a83a10ce79eab0d046de845c8892dedfa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the latest coherent three-channel measurement.  <a href="#a83a10ce79eab0d046de845c8892dedfa">More...</a><br /></td></tr>
+<tr class="separator:a83a10ce79eab0d046de845c8892dedfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa67815ba7183961c246472a0800c0e95"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#aa67815ba7183961c246472a0800c0e95">calibrateUVA</a> (uint16_t raw_uva)</td></tr>
 <tr class="memdesc:aa67815ba7183961c246472a0800c0e95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply the factory OTP correction to a raw UVA count.  <a href="#aa67815ba7183961c246472a0800c0e95">More...</a><br /></td></tr>
 <tr class="separator:aa67815ba7183961c246472a0800c0e95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae55bc778ce07f2c57e829f04a3a2d50"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#aae55bc778ce07f2c57e829f04a3a2d50">setALSThresholds</a> (<a class="el" href="_adafruit___t_s_l2585_8h.html#a513e42e02ac62da616c85545bbb95bf3">tsl2585_channel_t</a> channel, uint32_t low_threshold, uint32_t high_threshold, uint8_t persistence=1)</td></tr>
+<tr class="memdesc:aae55bc778ce07f2c57e829f04a3a2d50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure ALS interrupt thresholds and persistence.  <a href="#aae55bc778ce07f2c57e829f04a3a2d50">More...</a><br /></td></tr>
+<tr class="separator:aae55bc778ce07f2c57e829f04a3a2d50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acca7c02a23b2547c2396632c9606bd5e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#acca7c02a23b2547c2396632c9606bd5e">enableALSInterrupt</a> (bool enabled)</td></tr>
+<tr class="memdesc:acca7c02a23b2547c2396632c9606bd5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable or disable ALS threshold events on the open-drain INT pin.  <a href="#acca7c02a23b2547c2396632c9606bd5e">More...</a><br /></td></tr>
+<tr class="separator:acca7c02a23b2547c2396632c9606bd5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f2e2166530ef4c94c97e9ea16e51344"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#a6f2e2166530ef4c94c97e9ea16e51344">alsInterruptActive</a> ()</td></tr>
+<tr class="memdesc:a6f2e2166530ef4c94c97e9ea16e51344"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether an ALS threshold interrupt is pending.  <a href="#a6f2e2166530ef4c94c97e9ea16e51344">More...</a><br /></td></tr>
+<tr class="separator:a6f2e2166530ef4c94c97e9ea16e51344"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa52515fe80f1d35aff1f5f28fd063ecf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#aa52515fe80f1d35aff1f5f28fd063ecf">clearALSInterrupt</a> ()</td></tr>
+<tr class="memdesc:aa52515fe80f1d35aff1f5f28fd063ecf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the pending ALS threshold interrupt.  <a href="#aa52515fe80f1d35aff1f5f28fd063ecf">More...</a><br /></td></tr>
+<tr class="separator:aa52515fe80f1d35aff1f5f28fd063ecf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc3a5ba2dc4c6d1ab8984206fae8e845"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#adc3a5ba2dc4c6d1ab8984206fae8e845">setGPIOOutput</a> (bool released)</td></tr>
+<tr class="memdesc:adc3a5ba2dc4c6d1ab8984206fae8e845"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release or pull low the open-drain VSYNC/GPIO output.  <a href="#adc3a5ba2dc4c6d1ab8984206fae8e845">More...</a><br /></td></tr>
+<tr class="separator:adc3a5ba2dc4c6d1ab8984206fae8e845"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad150467f8be7079c373e783bf6a4e0ad"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#ad150467f8be7079c373e783bf6a4e0ad">enableGPIOInput</a> (bool enabled)</td></tr>
+<tr class="memdesc:ad150467f8be7079c373e783bf6a4e0ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable or disable the VSYNC/GPIO pin input.  <a href="#ad150467f8be7079c373e783bf6a4e0ad">More...</a><br /></td></tr>
+<tr class="separator:ad150467f8be7079c373e783bf6a4e0ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab06ef91727dd1d97f959d0c5776b152f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#ab06ef91727dd1d97f959d0c5776b152f">readGPIOInput</a> ()</td></tr>
+<tr class="memdesc:ab06ef91727dd1d97f959d0c5776b152f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the external state applied to the VSYNC/GPIO pin.  <a href="#ab06ef91727dd1d97f959d0c5776b152f">More...</a><br /></td></tr>
+<tr class="separator:ab06ef91727dd1d97f959d0c5776b152f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae57651fc8746853c893c607a79538a6f"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#ae57651fc8746853c893c607a79538a6f">getDeviceID</a> ()</td></tr>
 <tr class="separator:ae57651fc8746853c893c607a79538a6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ea13b31cf54f1483cb17752eb0cceeb"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#a0ea13b31cf54f1483cb17752eb0cceeb">getRevisionID</a> ()</td></tr>
@@ -121,6 +172,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a61b19cea082a0298fb9fdfbb8b2e4d00"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#a61b19cea082a0298fb9fdfbb8b2e4d00">getAuxiliaryID</a> ()</td></tr>
 <tr class="separator:a61b19cea082a0298fb9fdfbb8b2e4d00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5803f53ea2adb8352924d97e268056d"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___t_s_l2585.html#ad5803f53ea2adb8352924d97e268056d">getUVCalibration</a> ()</td></tr>
+<tr class="memdesc:ad5803f53ea2adb8352924d97e268056d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the factory UVA calibration byte.  <a href="#ad5803f53ea2adb8352924d97e268056d">More...</a><br /></td></tr>
 <tr class="separator:ad5803f53ea2adb8352924d97e268056d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -164,14 +216,14 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a5c4c14210473ca192ee094dbb67b694d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5c4c14210473ca192ee094dbb67b694d">&#9670;&nbsp;</a></span>isConnected()</h2>
+<a id="a5ace25770bde1b8d769becfdbbeeb601"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ace25770bde1b8d769becfdbbeeb601">&#9670;&nbsp;</a></span>reset()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool Adafruit_TSL2585::isConnected </td>
+          <td class="memname">bool Adafruit_TSL2585::reset </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -179,13 +231,14 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Check whether the configured I2C device acknowledges. </p>
-<dl class="section return"><dt>Returns</dt><dd>True when the sensor acknowledges its I2C address. </dd></dl>
+<p>Reset the sensor registers to their power-on values. </p>
+<p>Datasheet Figure 54 requires ENABLE.PON to be set before writing CONTROL.SOFT_RESET. The reset then initializes the device in the same way as a hardware reset.</p>
+<dl class="section return"><dt>Returns</dt><dd>True when the reset command was written successfully. </dd></dl>
 
 </div>
 </div>
-<a id="a725f76c4332dd55276fc1b0d93f5f9a7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a725f76c4332dd55276fc1b0d93f5f9a7">&#9670;&nbsp;</a></span>enable()</h2>
+<a id="a59e648cbdb734f1d54b48de3d5fbffa8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59e648cbdb734f1d54b48de3d5fbffa8">&#9670;&nbsp;</a></span>enable()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -193,34 +246,22 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">bool Adafruit_TSL2585::enable </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Power the oscillator and start continuous ALS measurements. </p>
-<dl class="section return"><dt>Returns</dt><dd>True when both I2C writes succeeded. </dd></dl>
-
-</div>
-</div>
-<a id="a998b2861f8e7b35b1e101ac3fbaa1123"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a998b2861f8e7b35b1e101ac3fbaa1123">&#9670;&nbsp;</a></span>disable()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool Adafruit_TSL2585::disable </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Stop measurements and power down the oscillator. </p>
-<dl class="section return"><dt>Returns</dt><dd>True when the I2C write succeeded. </dd></dl>
+<p>Enable or disable continuous ALS measurements. </p>
+<p>Datasheet Figure 16 sequences PON from SLEEP to IDLE before AEN starts ALS. Figure 20 identifies PON as the oscillator enable and AEN as the ALS enable.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">enabled</td><td>True to enable measurements, false to disable them. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True when the register writes succeeded. </dd></dl>
 
 </div>
 </div>
@@ -240,14 +281,14 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Set ALS integration time for the register-result path. </p>
+<p>Set ALS integration time for the register-result path. The time is rounded to the nearest whole sample using the sample period currently stored in SAMPLE_TIME. See TSL2585 datasheet Figures 23 through 26. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">milliseconds</td><td>Integration time from 0.25 ms through 90 ms. </td></tr>
+    <tr><td class="paramname">milliseconds</td><td>Integration time from 0.25 ms through 90 ms that rounds to 1 through 2048 samples at the current sample period. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>True when the value was in range and written successfully. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>True when the sample-time register was read and the resulting sample count was in range and written successfully. </dd></dl>
 
 </div>
 </div>
@@ -267,7 +308,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the configured ALS integration time. </p>
-<dl class="section return"><dt>Returns</dt><dd>Integration time in milliseconds. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Integration time in milliseconds, or 0 if the register read failed. </dd></dl>
 
 </div>
 </div>
@@ -297,7 +338,8 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Set the manual gain for one optical channel. </p>
+<p>Set the starting gain for one optical channel. </p>
+<p>This safely stops ALS, writes the selected step-0 modulator gain, and starts ALS again. Photopic and IR share MEAS_SEQR_STEP0_MOD_GAINX_L; UVA uses MEAS_SEQR_STEP0_MOD_GAINX_H. See TSL2585 datasheet Figures 63 and 64. When AGC is enabled, the sensor may replace this value before a measurement. Use the gain fields returned by <a class="el" href="class_adafruit___t_s_l2585.html#a83a10ce79eab0d046de845c8892dedfa" title="Read the latest coherent three-channel measurement. ">readData()</a> for the gain actually used.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">channel</td><td>The photopic, infrared, or UVA channel. </td></tr>
@@ -305,7 +347,7 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>True when the channel and gain were valid and the write succeeded. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>True when the register writes succeeded. </dd></dl>
 
 </div>
 </div>
@@ -332,7 +374,369 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The configured gain, or 0.5x for an invalid channel. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The configured gain, or 0.5x if the register read failed. </dd></dl>
+
+</div>
+</div>
+<a id="a91bd5abd1be02d02cf7b5f1eec47cf85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91bd5abd1be02d02cf7b5f1eec47cf85">&#9670;&nbsp;</a></span>enableAGC()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Adafruit_TSL2585::enableAGC </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable or disable automatic gain control. </p>
+<p>Enabling selects both predictive AGC and analog-saturation AGC for the library's active sequencer step 0. Predictive AGC chooses a gain near its target level, while saturation AGC can reduce that gain and repeat an AGC measurement if analog saturation remains. See the TSL2585 application note section 2.5 and datasheet Figures 46, 74, 76, and 80.</p>
+<p>MOD_CALIB_CFG0 controls how often AGC runs. The library default is every sequencer round. Use <a class="el" href="class_adafruit___t_s_l2585.html#ae8c1b567cb14f3b02349f7eefd3cdc71" title="Set how often modulator calibration features run. ">setCalibrationInterval()</a> while ALS is disabled to select another schedule. That schedule is shared with auto-zero calibration, which can add measurement time.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">enabled</td><td>True to enable both AGC methods, false for manual gain. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True when all register writes succeeded. </dd></dl>
+
+</div>
+</div>
+<a id="ac229f90cb2a93262eacc12eb63d961fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac229f90cb2a93262eacc12eb63d961fd">&#9670;&nbsp;</a></span>setResultFormat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Adafruit_TSL2585::setResultFormat </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>mode0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>mode1</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the raw ALS result format and bit alignment. </p>
+<p>This advanced setter writes MEAS_MODE0 and MEAS_MODE1 exactly as supplied. MEAS_MODE0 controls ALS scaling and result behavior; MEAS_MODE1 controls the most-significant result-bit position and flicker FIFO metadata. See TSL2585 datasheet Figures 21 and 22. Disable ALS before changing these registers; this function does not change PON or AEN.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mode0</td><td>Complete MEAS_MODE0 register value. </td></tr>
+    <tr><td class="paramname">mode1</td><td>Complete MEAS_MODE1 register value. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True when both register writes succeeded. </dd></dl>
+
+</div>
+</div>
+<a id="a5042e9e435c6fb0ef83e511b363a0487"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5042e9e435c6fb0ef83e511b363a0487">&#9670;&nbsp;</a></span>setSampleTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Adafruit_TSL2585::setSampleTime </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>sample_time_register_value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the raw 11-bit modulator sample-time value. </p>
+<p>SAMPLE_TIME spans SAMPLE_TIME0 and SAMPLE_TIME1. With the default CFG7 clock divider, one count is a 1.388889 us modulator-clock step, so the period is (sample_time_register_value + 1) steps. See TSL2585 datasheet Figures 23 and</p><ol type="1">
+<li>Disable ALS before changing this field; this function does not change PON or AEN.</li>
+</ol>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sample_time_register_value</td><td>Sample-time register value from 0 through 2047. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True when the value was valid and the register write succeeded. </dd></dl>
+
+</div>
+</div>
+<a id="a48cc7bcb5dbc04bab8313de40bfd11bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48cc7bcb5dbc04bab8313de40bfd11bf">&#9670;&nbsp;</a></span>getSampleTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t Adafruit_TSL2585::getSampleTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read the raw 11-bit modulator sample-time value. </p>
+<p>SAMPLE_TIME spans SAMPLE_TIME0 and SAMPLE_TIME1. With the default CFG7 clock divider, the sample period is the returned value plus one, multiplied by 1.388889 us. See TSL2585 datasheet Figures 23 and 24.</p>
+<dl class="section return"><dt>Returns</dt><dd>The register value from 0 through 2047, or -1 if the register read failed. </dd></dl>
+
+</div>
+</div>
+<a id="ad1f02fe075cd7a8488f0ee1163a4b908"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1f02fe075cd7a8488f0ee1163a4b908">&#9670;&nbsp;</a></span>setIntegrationSamples()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Adafruit_TSL2585::setIntegrationSamples </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>sample_count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the ALS integration length as an actual sample count. </p>
+<p>ALS_NR_SAMPLES stores one less than the requested count across registers ALS_NR_SAMPLES0 and ALS_NR_SAMPLES1. ALS integration time is the requested count multiplied by the sample period selected by <a class="el" href="class_adafruit___t_s_l2585.html#a5042e9e435c6fb0ef83e511b363a0487" title="Set the raw 11-bit modulator sample-time value. ">setSampleTime()</a>. See TSL2585 datasheet Figures 25 and 26. Disable ALS before changing this field; this function does not change PON or AEN.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sample_count</td><td>Number of samples from 1 through 2048. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True when the value was valid and the register write succeeded. </dd></dl>
+
+</div>
+</div>
+<a id="aab86f121a7496a80d211ce351eb58365"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab86f121a7496a80d211ce351eb58365">&#9670;&nbsp;</a></span>getIntegrationSamples()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t Adafruit_TSL2585::getIntegrationSamples </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read the ALS integration length as an actual sample count. </p>
+<p>ALS_NR_SAMPLES spans ALS_NR_SAMPLES0 and ALS_NR_SAMPLES1 and stores one less than the sample count. See TSL2585 datasheet Figures 25 and 26.</p>
+<dl class="section return"><dt>Returns</dt><dd>The sample count from 1 through 2048, or 0 if the register read failed or contained an invalid value. </dd></dl>
+
+</div>
+</div>
+<a id="aba442cd73a56ccc6e0c52e0d18f98cab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba442cd73a56ccc6e0c52e0d18f98cab">&#9670;&nbsp;</a></span>setGainValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Adafruit_TSL2585::setGainValue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_adafruit___t_s_l2585_8h.html#a513e42e02ac62da616c85545bbb95bf3">tsl2585_channel_t</a>&#160;</td>
+          <td class="paramname"><em>channel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_adafruit___t_s_l2585_8h.html#ac293538a3279ef6b0058299454ecae64">tsl2585_gain_t</a>&#160;</td>
+          <td class="paramname"><em>gain</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set one channel's gain field without changing the ALS state. </p>
+<p>This advanced setter writes the same step-0 gain fields as <a class="el" href="class_adafruit___t_s_l2585.html#ad4f13dfc3c28f000cc86abdf5fc9d50f" title="Set the starting gain for one optical channel. ">setGain()</a>, but it does not change PON or AEN. Use it while ALS is disabled when several setup registers must be programmed together. Photopic and IR occupy the low and high nibbles of MEAS_SEQR_STEP0_MOD_GAINX_L; UVA occupies the low nibble of MEAS_SEQR_STEP0_MOD_GAINX_H. See TSL2585 datasheet Figures 63 and 64.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">channel</td><td>The photopic, infrared, or UVA channel. </td></tr>
+    <tr><td class="paramname">gain</td><td>Gain from 0.5x through 4096x. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True when the register-field write succeeded. </dd></dl>
+
+</div>
+</div>
+<a id="a4e353f2f2290c5ce64f14647e5c4f7ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e353f2f2290c5ce64f14647e5c4f7ee">&#9670;&nbsp;</a></span>setSequencer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Adafruit_TSL2585::setSequencer </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>fd_mod01_pattern</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>als_fd_mod2_pattern</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>persistence_vsync_pattern</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>residual_mod01_pattern</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>residual_mod2_wait_pattern</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the raw ALS and flicker sequencer patterns. </p>
+<p>Each nibble is a four-step bit pattern: bit 0 selects sequencer step 0 and bit 3 selects step 3. The five bytes control flicker use by modulators 0/1, ALS and modulator-2 flicker use, persistence and VSYNC wait, residual use by modulators 0/1, and residual use by modulator 2 plus timer wait. See TSL2585 datasheet Figures 58 through 62. Disable ALS before changing these registers; this function does not change PON or AEN.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fd_mod01_pattern</td><td>Complete MEAS_SEQR_FD_0 register value. </td></tr>
+    <tr><td class="paramname">als_fd_mod2_pattern</td><td>Complete MEAS_SEQR_ALS_FD_1 register value. </td></tr>
+    <tr><td class="paramname">persistence_vsync_pattern</td><td>Complete MEAS_SEQR_APERS_AND_VSYNC_WAIT register value. </td></tr>
+    <tr><td class="paramname">residual_mod01_pattern</td><td>Complete MEAS_SEQR_RESIDUAL_0 register value. </td></tr>
+    <tr><td class="paramname">residual_mod2_wait_pattern</td><td>Complete MEAS_SEQR_RESIDUAL_1_AND_WAIT register value. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True when all five register writes succeeded. </dd></dl>
+
+</div>
+</div>
+<a id="ac780b770b102e8d7a679af9ee87112d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac780b770b102e8d7a679af9ee87112d3">&#9670;&nbsp;</a></span>setMaximumGain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Adafruit_TSL2585::setMaximumGain </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_adafruit___t_s_l2585_8h.html#ac293538a3279ef6b0058299454ecae64">tsl2585_gain_t</a>&#160;</td>
+          <td class="paramname"><em>maximum_gain</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the maximum gain available to every sequencer channel. </p>
+<p>This writes MEASUREMENT_SEQUENCER_MAX_MOD_GAIN in CFG8 without changing the AGC prediction reduction field. See TSL2585 datasheet Figure 50. Disable ALS before changing this field; this function does not change PON or AEN.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">maximum_gain</td><td>Maximum permitted gain from 0.5x through 4096x. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True when the register-field write succeeded. </dd></dl>
+
+</div>
+</div>
+<a id="a3e4b1a5e940632e4c64e0abfb9a46d01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e4b1a5e940632e4c64e0abfb9a46d01">&#9670;&nbsp;</a></span>setSMUX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Adafruit_TSL2585::setSMUX </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>smux_low</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>smux_high</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the raw step-0 photodiode-to-modulator routing. </p>
+<p>The low byte contains four two-bit fields for photodiodes 0 through 3. The low nibble of the high byte contains the fields for photodiodes 4 and 5; each field selects no connection or modulator 0, 1, or 2. See TSL2585 datasheet Figures 71 and 72. Disable ALS before changing these registers; this function does not change PON or AEN.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">smux_low</td><td>Complete MEAS_SEQR_STEP0_MOD_PHDX_SMUX_L register value. </td></tr>
+    <tr><td class="paramname">smux_high</td><td>MEAS_SEQR_STEP0_MOD_PHDX_SMUX_H value from 0 through 0x0F. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True when the value was valid and both register writes succeeded. </dd></dl>
+
+</div>
+</div>
+<a id="ae8c1b567cb14f3b02349f7eefd3cdc71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8c1b567cb14f3b02349f7eefd3cdc71">&#9670;&nbsp;</a></span>setCalibrationInterval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Adafruit_TSL2585::setCalibrationInterval </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>calibration_interval</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set how often modulator calibration features run. </p>
+<p>MOD_CALIB_CFG0 schedules every enabled calibration feature, including AGC and auto-zero, by sequencer rounds. Write 0 to disable scheduled calibration, 1 through 254 to run every nth round, or 255 to run once when measurements start. See TSL2585 datasheet Figure 79. Disable ALS before changing this register; this function does not change PON or AEN.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">calibration_interval</td><td>Calibration schedule from 0 through 255. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True when the register write succeeded. </dd></dl>
 
 </div>
 </div>
@@ -356,8 +760,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a49028eda9f7dab04b6d4fcfda4e75594"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a49028eda9f7dab04b6d4fcfda4e75594">&#9670;&nbsp;</a></span>readData()</h2>
+<a id="a83a10ce79eab0d046de845c8892dedfa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83a10ce79eab0d046de845c8892dedfa">&#9670;&nbsp;</a></span>readData()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -366,32 +770,21 @@ Public Member Functions</h2></td></tr>
           <td class="memname">bool Adafruit_TSL2585::readData </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structtsl2585__data__t.html">tsl2585_data_t</a> *&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>data</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>timeout_ms</em> = <code>1000</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Wait for and read one coherent three-channel measurement. </p>
-<p>STATUS2 is read before ALS_STATUS as required by the device. The complete ALS_STATUS through ALS_STATUS3 block is then read in one transaction so the channel values, saturation flags, and actual gains belong to one cycle.</p>
+<p>Read the latest coherent three-channel measurement. </p>
+<p>STATUS2 is read before ALS_STATUS as required by the device. The complete ALS_STATUS through ALS_STATUS3 block is then read in one transaction so the channel values, saturation flags, and actual gains belong to one cycle. The actual gains are then used to calculate typical 1x-equivalent counts.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">data</td><td>Destination for the result. </td></tr>
-    <tr><td class="paramname">timeout_ms</td><td>Maximum wait for fresh data in milliseconds. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>True when fresh data was read successfully. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>True when the register data was read successfully. </dd></dl>
 
 </div>
 </div>
@@ -422,6 +815,199 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="aae55bc778ce07f2c57e829f04a3a2d50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae55bc778ce07f2c57e829f04a3a2d50">&#9670;&nbsp;</a></span>setALSThresholds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Adafruit_TSL2585::setALSThresholds </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_adafruit___t_s_l2585_8h.html#a513e42e02ac62da616c85545bbb95bf3">tsl2585_channel_t</a>&#160;</td>
+          <td class="paramname"><em>channel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>low_threshold</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>high_threshold</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>persistence</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure ALS interrupt thresholds and persistence. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">channel</td><td>Optical channel used for threshold comparisons. </td></tr>
+    <tr><td class="paramname">low_threshold</td><td>Inclusive low threshold from 0 through 0xFFFFFF. </td></tr>
+    <tr><td class="paramname">high_threshold</td><td>Inclusive high threshold from 0 through 0xFFFFFF. </td></tr>
+    <tr><td class="paramname">persistence</td><td>Consecutive out-of-range results required, from 0 to 15. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True when the numeric settings were valid and all writes succeeded. </dd></dl>
+
+</div>
+</div>
+<a id="acca7c02a23b2547c2396632c9606bd5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acca7c02a23b2547c2396632c9606bd5e">&#9670;&nbsp;</a></span>enableALSInterrupt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Adafruit_TSL2585::enableALSInterrupt </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable or disable ALS threshold events on the open-drain INT pin. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">enabled</td><td>True to enable the interrupt, false to disable it. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True when the requested interrupt state was configured. </dd></dl>
+
+</div>
+</div>
+<a id="a6f2e2166530ef4c94c97e9ea16e51344"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f2e2166530ef4c94c97e9ea16e51344">&#9670;&nbsp;</a></span>alsInterruptActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Adafruit_TSL2585::alsInterruptActive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check whether an ALS threshold interrupt is pending. </p>
+<dl class="section return"><dt>Returns</dt><dd>True when the sensor's ALS interrupt status bit is set. </dd></dl>
+
+</div>
+</div>
+<a id="aa52515fe80f1d35aff1f5f28fd063ecf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa52515fe80f1d35aff1f5f28fd063ecf">&#9670;&nbsp;</a></span>clearALSInterrupt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Adafruit_TSL2585::clearALSInterrupt </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear the pending ALS threshold interrupt. </p>
+<dl class="section return"><dt>Returns</dt><dd>True when the write-one-to-clear operation succeeded. </dd></dl>
+
+</div>
+</div>
+<a id="adc3a5ba2dc4c6d1ab8984206fae8e845"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc3a5ba2dc4c6d1ab8984206fae8e845">&#9670;&nbsp;</a></span>setGPIOOutput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Adafruit_TSL2585::setGPIOOutput </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>released</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Release or pull low the open-drain VSYNC/GPIO output. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">released</td><td>True to release the output, false to pull it low. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True when the GPIO routing and output writes succeeded. </dd></dl>
+
+</div>
+</div>
+<a id="ad150467f8be7079c373e783bf6a4e0ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad150467f8be7079c373e783bf6a4e0ad">&#9670;&nbsp;</a></span>enableGPIOInput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Adafruit_TSL2585::enableGPIOInput </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable or disable the VSYNC/GPIO pin input. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">enabled</td><td>True to enable the input, false to disable it. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True when the GPIO direction writes succeeded. </dd></dl>
+
+</div>
+</div>
+<a id="ab06ef91727dd1d97f959d0c5776b152f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab06ef91727dd1d97f959d0c5776b152f">&#9670;&nbsp;</a></span>readGPIOInput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Adafruit_TSL2585::readGPIOInput </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read the external state applied to the VSYNC/GPIO pin. </p>
+<dl class="section return"><dt>Returns</dt><dd>True when the GPIO input is high, false when it is low. </dd></dl>
+
+</div>
+</div>
 <a id="ae57651fc8746853c893c607a79538a6f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae57651fc8746853c893c607a79538a6f">&#9670;&nbsp;</a></span>getDeviceID()</h2>
 
@@ -436,7 +1022,7 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The cached TSL2585 device identification byte. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The TSL2585 device identification byte, or 0 on read failure. </dd></dl>
 
 </div>
 </div>
@@ -454,7 +1040,7 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The cached silicon revision identification byte. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The silicon revision identification byte, or 0 on read failure. </dd></dl>
 
 </div>
 </div>
@@ -472,7 +1058,7 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The cached auxiliary identification byte. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The auxiliary identification byte, or 0 on read failure. </dd></dl>
 
 </div>
 </div>
@@ -490,7 +1076,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The cached factory UVA calibration byte, where 127 is nominal. </dd></dl>
+
+<p>Read the factory UVA calibration byte. </p>
+<dl class="section return"><dt>Returns</dt><dd>The calibration byte, where 127 is nominal, or 0 if the register read failed. </dd></dl>
 
 </div>
 </div>
