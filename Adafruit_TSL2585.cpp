@@ -57,7 +57,35 @@ bool Adafruit_TSL2585::begin(uint8_t i2c_addr, TwoWire* wire) {
   // UV_CALIB supplies the factory correction used for calibrated UVA results.
   _uv_calibration = getUVCalibration();
 
-  return configure();
+  // ENABLE register Figure 20 says to set PON only after configuration.
+  if (!enable(false)) {
+    return false;
+  }
+
+  // Configure unscaled 16-bit full counts with a 250 us sample period and
+  // 200 samples for a 50 ms integration. Sequencer step 0 runs ALS and
+  // interrupt persistence without flicker, residual, VSYNC, or wait
+  // measurements. Application note Table 1 routes the photopic, IR, and UVA
+  // diodes to modulators 0, 1, and 2. Each channel starts at 128x gain, with
+  // AGC allowed to select gains up to 4096x before every sequencer round.
+  if (!setResultFormat(TSL2585_MEAS_MODE0_FULL_COUNTS,
+                       TSL2585_MEAS_MODE1_MSB_POSITION_12) ||
+      !setSampleTime(TSL2585_SAMPLE_TIME_250_US) ||
+      !setIntegrationSamples(TSL2585_DEFAULT_ALS_SAMPLE_COUNT) ||
+      !setSequencer(TSL2585_SEQUENCER_DISABLED, TSL2585_SEQUENCER_STEP0,
+                    TSL2585_SEQUENCER_STEP0, TSL2585_SEQUENCER_DISABLED,
+                    TSL2585_SEQUENCER_DISABLED) ||
+      !setCalibrationInterval(TSL2585_CALIBRATION_EVERY_ROUND) ||
+      !setMaximumGain(TSL2585_GAIN_4096X) ||
+      !setGainValue(TSL2585_CHANNEL_PHOTOPIC, TSL2585_GAIN_128X) ||
+      !setGainValue(TSL2585_CHANNEL_IR, TSL2585_GAIN_128X) ||
+      !setGainValue(TSL2585_CHANNEL_UVA, TSL2585_GAIN_128X) ||
+      !setSMUX(TSL2585_RECOMMENDED_SMUX_L, TSL2585_RECOMMENDED_SMUX_H)) {
+    return false;
+  }
+
+  // Enable AGC for all three channels before starting measurements.
+  return enableAGC(true);
 }
 
 /*!
@@ -893,40 +921,4 @@ bool Adafruit_TSL2585::setCalibrationInterval(uint8_t calibration_interval) {
   Adafruit_BusIO_Register calibration_interval_reg(i2c_dev,
                                                    TSL2585_REG_MOD_CALIB_CFG0);
   return calibration_interval_reg.write(calibration_interval);
-}
-
-/*!
- * @brief Configure the documented one-step, three-channel ALS defaults.
- *
- * The register-result path returns unscaled 16-bit full counts with a 250 us
- * sample period and 200 samples for a 50 ms integration. Sequencer step 0 runs
- * ALS and interrupt persistence without flicker, residual, VSYNC, or wait
- * measurements. The ams OSRAM application note Table 1 SMUX map connects both
- * photopic diodes to modulator 0, both IR diodes to modulator 1, and both UVA
- * diodes to modulator 2. All three channels start at 128x gain, AGC may select
- * up to 4096x, and both AGC methods run before every sequencer round.
- */
-bool Adafruit_TSL2585::configure() {
-  // ENABLE register Figure 20 says to set PON only after configuration.
-  if (!enable(false)) {
-    return false;
-  }
-
-  if (!setResultFormat(TSL2585_MEAS_MODE0_FULL_COUNTS,
-                       TSL2585_MEAS_MODE1_MSB_POSITION_12) ||
-      !setSampleTime(TSL2585_SAMPLE_TIME_250_US) ||
-      !setIntegrationSamples(TSL2585_DEFAULT_ALS_SAMPLE_COUNT) ||
-      !setSequencer(TSL2585_SEQUENCER_DISABLED, TSL2585_SEQUENCER_STEP0,
-                    TSL2585_SEQUENCER_STEP0, TSL2585_SEQUENCER_DISABLED,
-                    TSL2585_SEQUENCER_DISABLED) ||
-      !setCalibrationInterval(TSL2585_CALIBRATION_EVERY_ROUND) ||
-      !setMaximumGain(TSL2585_GAIN_4096X) ||
-      !setGainValue(TSL2585_CHANNEL_PHOTOPIC, TSL2585_GAIN_128X) ||
-      !setGainValue(TSL2585_CHANNEL_IR, TSL2585_GAIN_128X) ||
-      !setGainValue(TSL2585_CHANNEL_UVA, TSL2585_GAIN_128X) ||
-      !setSMUX(TSL2585_RECOMMENDED_SMUX_L, TSL2585_RECOMMENDED_SMUX_H)) {
-    return false;
-  }
-
-  return enableAGC(true);
 }

@@ -258,7 +258,6 @@ class Adafruit_TSL2585 {
   Adafruit_I2CDevice* i2c_dev = nullptr;
   uint8_t _uv_calibration = 127;
 
-  bool configure();
   float normalizeGainTo1x(float counts, tsl2585_gain_t gain);
 };
 
