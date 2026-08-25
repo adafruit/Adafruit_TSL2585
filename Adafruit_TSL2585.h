@@ -132,23 +132,29 @@
 #define TSL2585_SMUX_HIGH_MAX 0x0F ///< Largest valid step-0 SMUX high value
 #define TSL2585_MAX_INTERRUPT_THRESHOLD 0xFFFFFFUL ///< Largest ALS threshold
 
-typedef struct __attribute__((packed)) {
-  uint8_t lower_nibble : 4;
-  uint8_t upper_nibble : 4;
+/*! @brief Packed lower and upper gain fields from a gain-status register. */
+#pragma pack(push, 1)
+typedef struct {
+  uint8_t lower_nibble : 4; ///< Gain code stored in bits 3 through 0
+  uint8_t upper_nibble : 4; ///< Gain code stored in bits 7 through 4
 } tsl2585_gain_register_t;
 
-typedef struct __attribute__((packed)) {
-  uint8_t als_status;
-  uint16_t als_data0;
-  uint16_t als_data1;
-  uint16_t als_data2;
-  tsl2585_gain_register_t als_data01_gain_status;
-  tsl2585_gain_register_t als_data2_gain_status;
+/*! @brief Packed register layout for one coherent ALS result block. */
+typedef struct {
+  uint8_t als_status; ///< Saturation status for all three modulators
+  uint16_t als_data0; ///< Raw result from modulator 0
+  uint16_t als_data1; ///< Raw result from modulator 1
+  uint16_t als_data2; ///< Raw result from modulator 2
+  tsl2585_gain_register_t
+      als_data01_gain_status; ///< Gain codes for modulators 0 and 1
+  tsl2585_gain_register_t als_data2_gain_status; ///< Gain code for modulator 2
 } tsl2585_result_registers_t;
+#pragma pack(pop)
 
+/*! @brief Byte buffer and register view for one coherent ALS result block. */
 typedef union {
-  tsl2585_result_registers_t registers;
-  uint8_t buffer[sizeof(tsl2585_result_registers_t)];
+  tsl2585_result_registers_t registers; ///< Structured register view
+  uint8_t buffer[sizeof(tsl2585_result_registers_t)]; ///< I2C read buffer
 } tsl2585_result_buffer_t;
 
 static_assert(sizeof(tsl2585_result_buffer_t) == 9,
