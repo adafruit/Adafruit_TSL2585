@@ -16,6 +16,12 @@ void setup() {
 
   Serial.println("TSL2585 basic hardware test");
 
+  if (tsl2585.getDeviceID() != 0 || tsl2585.getRevisionID() != 0 ||
+      tsl2585.getAuxiliaryID() != 0) {
+    haltWithFailure(F("An ID getter was not safe before begin"));
+  }
+  Serial.println("Pre-begin ID getters safely returned 0");
+
   if (!tsl2585.begin()) {
     haltWithFailure(F("Begin failed: check sensor power and I2C wiring"));
   }

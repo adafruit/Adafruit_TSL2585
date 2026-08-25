@@ -704,22 +704,46 @@ bool Adafruit_TSL2585::readGPIOInput() {
   return bitRead(vsync_gpio_int, TSL2585_GPIO_INPUT_BIT);
 }
 
-/*! @return The TSL2585 device identification byte. */
+/*! @return The TSL2585 device identification byte, or 0 on read failure. */
 uint8_t Adafruit_TSL2585::getDeviceID() {
+  if (i2c_dev == nullptr) {
+    return 0;
+  }
+
+  uint8_t device_id = 0;
   Adafruit_BusIO_Register id_reg(i2c_dev, TSL2585_REG_ID);
-  return id_reg.read();
+  if (!id_reg.read(&device_id)) {
+    return 0;
+  }
+  return device_id;
 }
 
-/*! @return The silicon revision identification byte. */
+/*! @return The silicon revision identification byte, or 0 on read failure. */
 uint8_t Adafruit_TSL2585::getRevisionID() {
+  if (i2c_dev == nullptr) {
+    return 0;
+  }
+
+  uint8_t revision_id = 0;
   Adafruit_BusIO_Register revision_id_reg(i2c_dev, TSL2585_REG_REV_ID);
-  return revision_id_reg.read();
+  if (!revision_id_reg.read(&revision_id)) {
+    return 0;
+  }
+  return revision_id;
 }
 
-/*! @return The auxiliary identification byte. */
+/*! @return The auxiliary identification byte, or 0 on read failure. */
 uint8_t Adafruit_TSL2585::getAuxiliaryID() {
+  if (i2c_dev == nullptr) {
+    return 0;
+  }
+
+  uint8_t auxiliary_id = 0;
   Adafruit_BusIO_Register auxiliary_id_reg(i2c_dev, TSL2585_REG_AUX_ID);
-  return auxiliary_id_reg.read();
+  if (!auxiliary_id_reg.read(&auxiliary_id)) {
+    return 0;
+  }
+  return auxiliary_id;
 }
 
 /*!
