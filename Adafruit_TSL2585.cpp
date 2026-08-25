@@ -180,8 +180,8 @@ bool Adafruit_TSL2585::setIntegrationTime(float milliseconds) {
     return false;
   }
 
-  uint16_t sample_time_register_value;
-  if (!getSampleTime(&sample_time_register_value)) {
+  int16_t sample_time_register_value = getSampleTime();
+  if (sample_time_register_value < 0) {
     return false;
   }
 
@@ -216,10 +216,9 @@ float Adafruit_TSL2585::getIntegrationTime() {
     return 0;
   }
 
-  uint16_t sample_time_register_value;
-  uint16_t sample_count;
-  if (!getSampleTime(&sample_time_register_value) ||
-      !getIntegrationSamples(&sample_count)) {
+  int16_t sample_time_register_value = getSampleTime();
+  uint16_t sample_count = getIntegrationSamples();
+  if (sample_time_register_value < 0 || sample_count == 0) {
     return 0;
   }
 
@@ -788,21 +787,22 @@ bool Adafruit_TSL2585::setSampleTime(uint16_t sample_time_register_value) {
  * divider, the sample period is the returned value plus one, multiplied by
  * 1.388889 us. See TSL2585 datasheet Figures 23 and 24.
  *
- * @param sample_time_register_value Destination for the value from 0 through
- * 2047.
- * @return True when the register read succeeded and contained a valid value.
+ * @return The register value from 0 through 2047, or -1 if the register read
+ * failed.
  */
-bool Adafruit_TSL2585::getSampleTime(uint16_t* sample_time_register_value) {
-  if (i2c_dev == nullptr || sample_time_register_value == nullptr) {
-    return false;
+int16_t Adafruit_TSL2585::getSampleTime() {
+  if (i2c_dev == nullptr) {
+    return -1;
   }
 
+  uint16_t sample_time_register_value = 0;
   Adafruit_BusIO_Register sample_time_reg(i2c_dev, TSL2585_REG_SAMPLE_TIME0, 2,
                                           LSBFIRST);
-  if (!sample_time_reg.read(sample_time_register_value)) {
-    return false;
+  if (!sample_time_reg.read(&sample_time_register_value) ||
+      sample_time_register_value > TSL2585_MAX_SAMPLE_TIME) {
+    return -1;
   }
-  return *sample_time_register_value <= TSL2585_MAX_SAMPLE_TIME;
+  return sample_time_register_value;
 }
 
 /*!
@@ -834,12 +834,12 @@ bool Adafruit_TSL2585::setIntegrationSamples(uint16_t sample_count) {
  * ALS_NR_SAMPLES spans ALS_NR_SAMPLES0 and ALS_NR_SAMPLES1 and stores one less
  * than the sample count. See TSL2585 datasheet Figures 25 and 26.
  *
- * @param sample_count Destination for the sample count from 1 through 2048.
- * @return True when the register read succeeded and contained a valid value.
+ * @return The sample count from 1 through 2048, or 0 if the register read
+ * failed or contained an invalid value.
  */
-bool Adafruit_TSL2585::getIntegrationSamples(uint16_t* sample_count) {
-  if (i2c_dev == nullptr || sample_count == nullptr) {
-    return false;
+uint16_t Adafruit_TSL2585::getIntegrationSamples() {
+  if (i2c_dev == nullptr) {
+    return 0;
   }
 
   uint16_t sample_count_register_value;
@@ -847,11 +847,10 @@ bool Adafruit_TSL2585::getIntegrationSamples(uint16_t* sample_count) {
                                           2, LSBFIRST);
   if (!als_samples_reg.read(&sample_count_register_value) ||
       sample_count_register_value >= TSL2585_MAX_INTEGRATION_SAMPLES) {
-    return false;
+    return 0;
   }
 
-  *sample_count = sample_count_register_value + 1;
-  return true;
+  return sample_count_register_value + 1;
 }
 
 /*!

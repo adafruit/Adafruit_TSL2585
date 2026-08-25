@@ -232,9 +232,9 @@ class Adafruit_TSL2585 {
 
   bool setResultFormat(uint8_t mode0, uint8_t mode1);
   bool setSampleTime(uint16_t sample_time_register_value);
-  bool getSampleTime(uint16_t* sample_time_register_value);
+  int16_t getSampleTime();
   bool setIntegrationSamples(uint16_t sample_count);
-  bool getIntegrationSamples(uint16_t* sample_count);
+  uint16_t getIntegrationSamples();
   bool setGainValue(tsl2585_channel_t channel, tsl2585_gain_t gain);
   bool setSequencer(uint8_t fd_mod01_pattern, uint8_t als_fd_mod2_pattern,
                     uint8_t persistence_vsync_pattern,

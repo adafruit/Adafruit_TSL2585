@@ -271,10 +271,9 @@ void configureAdvancedSettings() {
       !tsl2585.setIntegrationSamples(TSL2585_DEFAULT_ALS_SAMPLE_COUNT)) {
     haltWithMessage(F("Could not set the raw sample timing."));
   }
-  uint16_t sampleTimeRegisterValue;
-  uint16_t integrationSamples;
-  if (!tsl2585.getSampleTime(&sampleTimeRegisterValue) ||
-      !tsl2585.getIntegrationSamples(&integrationSamples)) {
+  int16_t sampleTimeRegisterValue = tsl2585.getSampleTime();
+  uint16_t integrationSamples = tsl2585.getIntegrationSamples();
+  if (sampleTimeRegisterValue < 0 || integrationSamples == 0) {
     haltWithMessage(F("Could not read the raw sample timing."));
   }
   Serial.print(F("Sample-time register value: "));
