@@ -63,10 +63,9 @@ void loop() {
     Serial.print(data.uva_1x, 1);
     Serial.print('\t');
     if (saturated) {
-      Serial.println("yes");
-    } else {
-      Serial.println("no");
+      Serial.print("saturated");
     }
+    Serial.println();
   }
 
   delay(100);
