@@ -24,15 +24,8 @@ void setup() {
   Serial.println(tsl2585.getDeviceID(), HEX);
   Serial.print("Revision ID: 0x");
   Serial.println(tsl2585.getRevisionID(), HEX);
-  uint8_t uvCalibration;
-  if (!tsl2585.getUVCalibration(&uvCalibration)) {
-    Serial.println("Could not read the factory UVA calibration byte.");
-    while (true) {
-      delay(10);
-    }
-  }
   Serial.print("Factory UVA calibration byte: ");
-  Serial.println(uvCalibration);
+  Serial.println(tsl2585.getUVCalibration());
 
   // Register-based results support integration times from 0.25 ms to 90 ms.
   if (!tsl2585.setIntegrationTime(50)) {

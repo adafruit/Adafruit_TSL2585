@@ -49,12 +49,8 @@ void setup() {
   Serial.println(tsl2585.getRevisionID(), HEX);
   Serial.print("Auxiliary ID: 0x");
   Serial.println(tsl2585.getAuxiliaryID(), HEX);
-  uint8_t uvCalibration;
-  if (!tsl2585.getUVCalibration(&uvCalibration)) {
-    haltWithFailure(F("Reading the factory UVA calibration byte failed"));
-  }
   Serial.print("Factory UVA calibration byte: ");
-  Serial.println(uvCalibration);
+  Serial.println(tsl2585.getUVCalibration());
 
   Serial.println();
   if (!tsl2585.setIntegrationTime(50)) {
