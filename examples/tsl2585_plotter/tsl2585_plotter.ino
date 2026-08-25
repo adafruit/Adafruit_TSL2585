@@ -11,8 +11,6 @@ void setup() {
   }
   delay(250);
 
-  Serial.println("Adafruit TSL2585 Serial Plotter");
-
   if (!tsl2585.begin()) {
     Serial.println("Could not find a TSL2585. Check the wiring and I2C address.");
     while (true) {
