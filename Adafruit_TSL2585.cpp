@@ -270,18 +270,21 @@ tsl2585_gain_t Adafruit_TSL2585::getGain(tsl2585_channel_t channel) {
   }
 
   uint16_t gain_register_address = TSL2585_REG_STEP0_GAIN_L;
-  uint8_t gain_field_shift = TSL2585_PHOTOPIC_GAIN_SHIFT;
   if (channel == TSL2585_CHANNEL_UVA) {
     gain_register_address = TSL2585_REG_STEP0_GAIN_H;
-    gain_field_shift = TSL2585_UVA_GAIN_SHIFT;
-  } else if (channel == TSL2585_CHANNEL_IR) {
-    gain_field_shift = TSL2585_IR_GAIN_SHIFT;
   }
 
+  // A direct RegisterBits read cannot distinguish an I2C failure from 0x0F.
+  tsl2585_gain_register_t gain_register_value;
   Adafruit_BusIO_Register gain_reg(i2c_dev, gain_register_address);
-  Adafruit_BusIO_RegisterBits gain_bits(&gain_reg, TSL2585_GAIN_BITS,
-                                        gain_field_shift);
-  return (tsl2585_gain_t)gain_bits.read();
+  if (!gain_reg.read((uint8_t*)&gain_register_value)) {
+    return TSL2585_GAIN_0_5X;
+  }
+
+  if (channel == TSL2585_CHANNEL_IR) {
+    return (tsl2585_gain_t)gain_register_value.upper_nibble;
+  }
+  return (tsl2585_gain_t)gain_register_value.lower_nibble;
 }
 
 /*!
@@ -365,10 +368,13 @@ bool Adafruit_TSL2585::dataReady() {
     return false;
   }
 
+  // A direct RegisterBits read cannot report an I2C failure.
+  uint8_t status2;
   Adafruit_BusIO_Register status2_reg(i2c_dev, TSL2585_REG_STATUS2);
-  Adafruit_BusIO_RegisterBits data_valid_bit(&status2_reg, 1,
-                                             TSL2585_STATUS2_DATA_VALID_BIT);
-  return data_valid_bit.read();
+  if (!status2_reg.read(&status2)) {
+    return false;
+  }
+  return bitRead(status2, TSL2585_STATUS2_DATA_VALID_BIT);
 }
 
 /*!
@@ -604,10 +610,13 @@ bool Adafruit_TSL2585::alsInterruptActive() {
     return false;
   }
 
+  // A direct RegisterBits read cannot report an I2C failure.
+  uint8_t status;
   Adafruit_BusIO_Register status_reg(i2c_dev, TSL2585_REG_STATUS);
-  Adafruit_BusIO_RegisterBits als_interrupt_status_bit(&status_reg, 1,
-                                                       TSL2585_STATUS_AINT_BIT);
-  return als_interrupt_status_bit.read() != 0;
+  if (!status_reg.read(&status)) {
+    return false;
+  }
+  return bitRead(status, TSL2585_STATUS_AINT_BIT);
 }
 
 /*!
@@ -685,11 +694,14 @@ bool Adafruit_TSL2585::readGPIOInput() {
   }
 
   // VSYNC_GPIO_INT reports the logic level currently present on the GPIO pin.
+  // A direct RegisterBits read cannot report an I2C failure.
+  uint8_t vsync_gpio_int;
   Adafruit_BusIO_Register vsync_gpio_int_reg(i2c_dev,
                                              TSL2585_REG_VSYNC_GPIO_INT);
-  Adafruit_BusIO_RegisterBits gpio_input_bit(&vsync_gpio_int_reg, 1,
-                                             TSL2585_GPIO_INPUT_BIT);
-  return gpio_input_bit.read();
+  if (!vsync_gpio_int_reg.read(&vsync_gpio_int)) {
+    return false;
+  }
+  return bitRead(vsync_gpio_int, TSL2585_GPIO_INPUT_BIT);
 }
 
 /*! @return The TSL2585 device identification byte. */
