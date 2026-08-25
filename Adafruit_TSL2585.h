@@ -261,6 +261,9 @@ class Adafruit_TSL2585 {
   uint8_t getUVCalibration();
 
  private:
+  Adafruit_TSL2585(const Adafruit_TSL2585&) = delete;
+  Adafruit_TSL2585& operator=(const Adafruit_TSL2585&) = delete;
+
   Adafruit_I2CDevice* i2c_dev = nullptr;
   uint8_t _uv_calibration = 127;
 
